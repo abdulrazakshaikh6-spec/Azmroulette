@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
@@ -296,8 +297,10 @@
     border: 1.5px solid rgba(245, 197, 66, 0.55);
     border-radius: 10px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     font-weight: 800;
     font-size: 13px;
     color: #fff5cc;
@@ -405,11 +408,6 @@
     touch-action: pan-y;
   }
 
-  .hotspot-invisible.drag-target-active {
-    background: rgba(245, 197, 66, 0.28);
-    border-radius: 50%;
-  }
-
   .placed-chip {
     position: absolute;
     bottom: 4px;
@@ -447,4 +445,1329 @@
     padding: 0 8px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, #ffe77a, #b87504);
-    color
+    color: #0e1511;
+    border: 3px solid #ffffff;
+    font-weight: 900;
+    font-size: 11px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
+    transform: translate(-50%, -50%) scale(1.12);
+    direction: ltr;
+  }
+
+  .trash-dropzone {
+    margin-top: 10px;
+    border: 2px dashed rgba(255, 107, 107, 0.7);
+    background: rgba(201, 42, 42, 0.14);
+    color: #ffc9c9;
+    border-radius: 12px;
+    padding: 11px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 13px;
+    transition: all 0.15s ease;
+  }
+
+  .trash-dropzone.drag-over {
+    background: rgba(224, 49, 49, 0.45);
+    border-style: solid;
+    border-color: #ff8787;
+    transform: scale(1.01);
+  }
+
+  .action-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .btn {
+    padding: 11px 8px;
+    border-radius: 11px;
+    border: 1px solid var(--border-gold);
+    background: var(--bg-card);
+    color: var(--text-main);
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .btn-spin {
+    background: linear-gradient(135deg, #22c55e, #15803d);
+    color: #ffffff;
+    border-color: #86efac;
+    font-size: 15px;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #f5c542, #d49b1a);
+    color: #0b1410;
+  }
+
+  .btn-danger {
+    background: rgba(201, 42, 42, 0.25);
+    border-color: #ff6b6b;
+    color: #ffc9c9;
+  }
+
+  .card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-gold);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--gold);
+    margin: 0 0 10px 0;
+  }
+
+  .buckets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .bucket-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(245, 197, 66, 0.35);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .mono-box {
+    background: #09120e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    word-break: break-all;
+    direction: ltr;
+    text-align: left;
+    margin: 6px 0;
+  }
+
+  .input-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+
+  input, select {
+    background: #09120e;
+    color: var(--text-main);
+    border: 1px solid var(--border-gold);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  #toast-banner {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    background: #10241b;
+    color: #fff6d1;
+    border: 1.5px solid var(--gold);
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    display: none;
+    max-width: 92vw;
+    text-align: center;
+  }
+
+  #wheel-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  #wheel-modal.open {
+    display: flex;
+  }
+
+  .modal-box {
+    background: var(--bg-panel);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    padding: 18px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="app-zoom-wrap">
+  <header class="top-bar">
+    <div class="brand-title">
+      <span>🎡</span>
+      <span id="t-app-title">عزم (AZM) &amp; یورپین رولیٹ</span>
+    </div>
+
+    <div class="lang-group">
+      <button class="lang-btn active" onclick="setLang('ur')">اردو</button>
+      <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+      <button class="lang-btn" onclick="setLang('en')">English</button>
+    </div>
+
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="changeZoom(-0.1)">−</button>
+      <button class="zoom-btn" onclick="resetZoom()" id="zoom-label">100%</button>
+      <button class="zoom-btn" onclick="changeZoom(0.1)">+</button>
+    </div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('roulette', this)" id="tab-roulette">🎡 رولیٹ ٹیبل</button>
+    <button class="tab-btn" onclick="switchTab('wallet', this)" id="tab-wallet">🪙 پبلک والٹ</button>
+    <button class="tab-btn" onclick="switchTab('buckets', this)" id="tab-buckets">🪣 3 بکٹس (100 کروڑ)</button>
+    <button class="tab-btn" onclick="switchTab('vault', this)" id="tab-vault">👑 ماسٹر والٹ</button>
+  </nav>
+
+  <div class="container">
+    <section id="panel-roulette" class="panel active">
+      <div class="wallet-strip">
+        <div class="stat-box">
+          <div class="stat-label" id="lbl-balance">والٹ بیلنس (AZM)</div>
+          <div class="stat-val" id="ui-balance">0.00000000</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label" id="lbl-current-bet">موجودہ داؤ (فی اسپن)</div>
+          <div class="stat-val" id="ui-current-bet">0.00000000</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label" id="lbl-max-bet">میکس بیٹ لمٹ</div>
+          <div class="stat-val" id="ui-max-bet">5,000.00000000</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label" id="lbl-last-win">آخری نتیجہ</div>
+          <div class="stat-val" id="ui-last-result">—</div>
+        </div>
+      </div>
+
+      <div class="coin-tray-wrap">
+        <div class="coin-tray-header">
+          <span id="lbl-coin-tray">تمام کوائنز (دائیں/بائیں اسکرول کریں)</span>
+          <span id="lbl-selected-chip">Chip: 1 AZM</span>
+        </div>
+        <div class="coin-tray" id="coin-tray"></div>
+      </div>
+
+      <div class="roulette-board">
+        <div class="top-meta-row">
+          <div class="badge-pill" id="ui-spin-info">Spins: 0 | R1: 0/37</div>
+          <div class="badge-pill" id="ui-hot-cold">Hot: — | Cold: —</div>
+        </div>
+
+        <div class="table-grid-shell" id="table-grid-shell">
+          <div class="outside-col">
+            <div class="outside-box" data-bet="LOW" onclick="placeOutside('LOW', this)">
+              <span>1–18</span>
+              <span class="hit-count" id="bet-badge-LOW" style="display:none">0</span>
+            </div>
+            <div class="outside-box" data-bet="EVEN" onclick="placeOutside('EVEN', this)">
+              <span>EVEN</span>
+              <span class="hit-count" id="bet-badge-EVEN" style="display:none">0</span>
+            </div>
+            <div class="outside-box red-box" data-bet="RED" onclick="placeOutside('RED', this)">
+              <span>RED</span>
+              <span class="hit-count" id="bet-badge-RED" style="display:none">0</span>
+            </div>
+            <div class="outside-box black-box" data-bet="BLACK" onclick="placeOutside('BLACK', this)">
+              <span>BLACK</span>
+              <span class="hit-count" id="bet-badge-BLACK" style="display:none">0</span>
+            </div>
+            <div class="outside-box" data-bet="ODD" onclick="placeOutside('ODD', this)">
+              <span>ODD</span>
+              <span class="hit-count" id="bet-badge-ODD" style="display:none">0</span>
+            </div>
+            <div class="outside-box" data-bet="HIGH" onclick="placeOutside('HIGH', this)">
+              <span>19–36</span>
+              <span class="hit-count" id="bet-badge-HIGH" style="display:none">0</span>
+            </div>
+          </div>
+
+          <div class="dozen-col">
+            <div class="dozen-box" data-bet="DOZEN_1" id="dozen-1">
+              <div class="dozen-zone-strip top" onclick="event.stopPropagation(); placeOutside('DOZEN_1', this.parentElement)"></div>
+              <div class="dozen-zone-strip mid" onclick="event.stopPropagation(); placeOutside('DOZEN_1', this.parentElement)"></div>
+              <div class="dozen-zone-strip bot" onclick="event.stopPropagation(); placeOutside('DOZEN_1', this.parentElement)"></div>
+              <span>1st 12</span>
+              <span class="hit-count" id="bet-badge-DOZEN_1" style="display:none">0</span>
+            </div>
+            <div class="dozen-box" data-bet="DOZEN_2" id="dozen-2">
+              <div class="dozen-zone-strip top" onclick="event.stopPropagation(); placeOutside('DOZEN_2', this.parentElement)"></div>
+              <div class="dozen-zone-strip mid" onclick="event.stopPropagation(); placeOutside('DOZEN_2', this.parentElement)"></div>
+              <div class="dozen-zone-strip bot" onclick="event.stopPropagation(); placeOutside('DOZEN_2', this.parentElement)"></div>
+              <span>2nd 12</span>
+              <span class="hit-count" id="bet-badge-DOZEN_2" style="display:none">0</span>
+            </div>
+            <div class="dozen-box" data-bet="DOZEN_3" id="dozen-3">
+              <div class="dozen-zone-strip top" onclick="event.stopPropagation(); placeOutside('DOZEN_3', this.parentElement)"></div>
+              <div class="dozen-zone-strip mid" onclick="event.stopPropagation(); placeOutside('DOZEN_3', this.parentElement)"></div>
+              <div class="dozen-zone-strip bot" onclick="event.stopPropagation(); placeOutside('DOZEN_3', this.parentElement)"></div>
+              <span>3rd 12</span>
+              <span class="hit-count" id="bet-badge-DOZEN_3" style="display:none">0</span>
+            </div>
+          </div>
+
+          <div class="numbers-area">
+            <div class="zero-cell" id="cell-0" data-bet="NUM_0" onclick="placeNumber(0, this)">
+              <span>0</span>
+              <span class="hit-count" id="freq-0">0</span>
+            </div>
+            <div class="nums-3x12" id="nums-3x12"></div>
+          </div>
+        </div>
+
+        <div class="trash-dropzone" id="trash-dropzone">
+          🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں (Drag Coin Here to Remove)
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-danger" onclick="clearBets()" id="btn-clear">Clear</button>
+          <button class="btn" onclick="undoBet()" id="btn-undo">Undo</button>
+          <button class="btn btn-gold" onclick="doubleBets()" id="btn-double">2x</button>
+          <button class="btn btn-spin" onclick="spinRoulette()" id="btn-spin">SPIN</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-wallet" class="panel">
+      <div class="card">
+        <h3 class="card-title" id="w-title-identity">والٹ شناخت، کیو آر کوڈ اور ڈیجیٹل دستخط</h3>
+        <div class="stat-label">Public Wallet Address</div>
+        <div class="mono-box" id="w-pub-addr"></div>
+
+        <div class="stat-label">Public Key (Verification)</div>
+        <div class="mono-box" id="w-pub-key"></div>
+
+        <div class="stat-label">Private Key (خفیہ — کسی کو نہ دکھائیں)</div>
+        <div class="mono-box" id="w-priv-key">••••••••••••••••••••••••••••••••</div>
+        <div class="input-row">
+          <button class="btn" onclick="togglePrivKey()">👁️ Show / Hide Private Key</button>
+          <button class="btn" onclick="copyText(state.wallet.address)">📋 Copy Address</button>
+          <button class="btn" onclick="newWalletKeys()">🔄 New Keypair</button>
+        </div>
+
+        <div style="margin-top:12px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+          <canvas id="qr-canvas" width="132" height="132" style="background:#fff; padding:6px; border-radius:10px;"></canvas>
+          <div>
+            <div style="font-weight:800; color:var(--gold); margin-bottom:4px;">Wallet QR Code</div>
+            <div style="font-size:12px; color:var(--text-muted); max-width:260px;">
+              یہ QR کوڈ آپ کے پبلک والٹ ایڈریس کی نمائندگی کرتا ہے تاکہ دوسرے صارفین آسانی سے AZM بھیج سکیں۔
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں (Signed Transfer)</h3>
+        <div class="input-row">
+          <input type="text" id="send-to" placeholder="Receiver Public Address (e.g. AZM-PUB-...)" />
+          <input type="number" step="0.00000001" id="send-amt" placeholder="Amount AZM" />
+        </div>
+        <button class="btn btn-gold" onclick="sendSignedAzm()">Sign &amp; Send AZM</button>
+        <div id="last-sig-box" class="mono-box" style="display:none"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">🎁 ریوارڈز اور ویلکم بونس (5 کروڑ ریوارڈ بکٹ سے)</h3>
+        <div class="input-row">
+          <button class="btn btn-gold" onclick="claimWelcome()">🎉 Welcome Bonus (+50 AZM)</button>
+          <button class="btn" onclick="claimAdReward()">📺 Watch Ad (+5 AZM)</button>
+          <button class="btn" onclick="claimDailyReward()">📅 Daily 24h (+1 AZM)</button>
+          <button class="btn" onclick="claimRefReward()">🤝 Refer (+10 AZM)</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-buckets" class="panel">
+      <div class="card">
+        <h3 class="card-title">🪣 100 کروڑ AZM — تین الگ بکٹس (غیر متبدل کل سپلائی)</h3>
+        <div class="mono-box" id="supply-check-box"></div>
+        <div class="buckets-grid">
+          <div class="bucket-card">
+            <div class="stat-label">1. ویلکم بونس ریزرو (Welcome Reserve)</div>
+            <div class="stat-val" id="b-welcome">0</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">ابتدائی 1 کروڑ صارفین کے 50 AZM بونس کے لیے۔</div>
+          </div>
+          <div class="bucket-card">
+            <div class="stat-label">2. رولیٹ ریزرو و آٹو ری فل (Roulette Reserve)</div>
+            <div class="stat-val" id="b-roulette">0</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">رولیٹ ہاؤس پول کم ہونے پر خودکار ٹاپ اپ کے لیے۔</div>
+          </div>
+          <div class="bucket-card">
+            <div class="stat-label">3. ریوارڈ و فیس بکٹ (Reward &amp; Tx Bucket)</div>
+            <div class="stat-val" id="b-reward">0</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Ad / Daily / Refer ریوارڈز اور Tx فیس کے لیے۔</div>
+          </div>
+          <div class="bucket-card">
+            <div class="stat-label">فعال رولیٹ ہاؤس پول (Active House Pool)</div>
+            <div class="stat-val" id="b-house">0</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">جیت کی ادائیگی اور ہارے داؤ کی واپسی کا پول۔</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">⛓️ SHA-256 لیجر (حالیہ بلاکس)</h3>
+        <div id="ledger-list"></div>
+      </div>
+    </section>
+
+    <section id="panel-vault" class="panel">
+      <div class="card">
+        <h3 class="card-title">👑 ماسٹر والٹ کنٹرول (AZM-MASTER-2026)</h3>
+        <div class="input-row">
+          <input type="password" id="vault-pin" placeholder="Enter Master Code (AZM-MASTER-2026)" />
+          <button class="btn btn-gold" onclick="unlockVault()">Unlock Vault</button>
+        </div>
+        <div id="vault-controls" style="display:none; margin-top:12px;">
+          <div class="stat-label">میکس بیٹ لمٹ تبدیل کریں (Current: 5,000 AZM)</div>
+          <div class="input-row">
+            <input type="number" id="max-bet-input" value="5000" min="1" />
+            <button class="btn btn-gold" onclick="updateMaxBet()">Update Max Bet</button>
+          </div>
+          <div class="stat-label">رولیٹ آٹو ری فل کم از کم حد (Auto-Refill Threshold)</div>
+          <div class="input-row">
+            <input type="number" id="refill-thresh-input" value="1000000" min="100" />
+            <button class="btn" onclick="updateRefillThresh()">Update Threshold</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="floating-drag-coin"></div>
+<div id="toast-banner"></div>
+
+<div id="wheel-modal">
+  <div class="modal-box">
+    <h3 style="margin:0 0 10px; color:var(--gold)">🎡 Spinning Wheel</h3>
+    <div id="wheel-result-anim" style="font-size:38px; font-weight:900; padding:24px; border-radius:50%; width:120px; height:120px; margin:10px auto; display:flex; align-items:center; justify-content:center; border:4px solid var(--gold); background:#132a20;">?</div>
+    <div id="wheel-outcome-text" style="font-size:14px; margin:12px 0; font-weight:700;"></div>
+    <button class="btn btn-gold" onclick="closeWheelModal()">OK</button>
+  </div>
+</div>
+
+<script>
+const TOTAL_SUPPLY_UNITS = 100000000000000000n;
+const DECIMALS = 100000000n;
+const RED_NUMS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+
+const COIN_DENOMS = [
+  { label: "1u", units: 1n },
+  { label: "0.0001", units: 10000n },
+  { label: "0.01", units: 1000000n },
+  { label: "0.1", units: 10000000n },
+  { label: "0.5", units: 50000000n },
+  { label: "1", units: 100000000n },
+  { label: "5", units: 500000000n },
+  { label: "10", units: 1000000000n },
+  { label: "15", units: 1500000000n },
+  { label: "20", units: 2000000000n },
+  { label: "50", units: 5000000000n },
+  { label: "100", units: 10000000000n },
+  { label: "500", units: 50000000000n },
+  { label: "1000", units: 100000000000n },
+  { label: "5000", units: 500000000000n }
+];
+
+function fmtAzm(unitsBig) {
+  const neg = unitsBig < 0n;
+  const abs = neg ? -unitsBig : unitsBig;
+  const whole = abs / DECIMALS;
+  const frac = (abs % DECIMALS).toString().padStart(8, "0");
+  return (neg ? "-" : "") + whole.toLocaleString("en-US") + "." + frac + " AZM";
+}
+
+function fmtShortChip(unitsBig) {
+  const whole = unitsBig / DECIMALS;
+  const frac = unitsBig % DECIMALS;
+  if (frac === 0n) return whole.toString();
+  return (Number(unitsBig) / 1e8).toString();
+}
+
+function randomHex(bytesLen) {
+  try {
+    const arr = new Uint8Array(bytesLen);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, b => b.toString(16).padStart(2, "0")).join("");
+  } catch {
+    let out = "";
+    for (let i = 0; i < bytesLen * 2; i++) out += Math.floor(Math.random() * 16).toString(16);
+    return out;
+  }
+}
+
+function createKeypair() {
+  const priv = "0x" + randomHex(32);
+  const pubKey = "0x04" + randomHex(32);
+  const addr = "AZM-PUB-0x" + pubKey.slice(-24).toUpperCase();
+  return { priv, pubKey, addr };
+}
+
+function defaultState() {
+  const kp = createKeypair();
+  const welcomeUnits = 50000000000000000n;
+  const rouletteUnits = 45000000000000000n;
+  const rewardUnits = 5000000000000000n;
+  const houseUnits = 0n;
+  const playerUnits = 0n;
+
+  return {
+    lang: "ur",
+    zoom: 1,
+    maxBetUnits: "500000000000",
+    refillThresholdUnits: "100000000000000",
+    refillBatchUnits: "500000000000000",
+    welcomeClaimed: false,
+    lastDailyClaim: 0,
+    adCount: 0,
+    refCount: 0,
+    selectedChipUnits: "100000000",
+    showPrivKey: false,
+    wallet: {
+      address: kp.addr,
+      publicKey: kp.pubKey,
+      privateKey: kp.priv,
+      balanceUnits: playerUnits.toString()
+    },
+    buckets: {
+      welcomeUnits: welcomeUnits.toString(),
+      rouletteReserveUnits: rouletteUnits.toString(),
+      rewardUnits: rewardUnits.toString(),
+      housePoolUnits: houseUnits.toString()
+    },
+    bets: {},
+    betHistory: [],
+    spinCount: 0,
+    roundSpins: 0,
+    roundUniqueSet: [],
+    lastHit: null,
+    freq: Array(37).fill(0),
+    chain: [
+      { index: 0, type: "GENESIS", note: "1,000,000,000.00000000 AZM Fixed Supply Locked", hash: randomHex(32) }
+    ]
+  };
+}
+
+let state = loadState();
+
+function loadState() {
+  const base = defaultState();
+  try {
+    const raw = localStorage.getItem("azm_roulette_state_v1");
+    if (!raw) return base;
+    const parsed = JSON.parse(raw);
+    return {
+      ...base,
+      ...parsed,
+      wallet: { ...base.wallet, ...(parsed.wallet || {}) },
+      buckets: { ...base.buckets, ...(parsed.buckets || {}) },
+      bets: parsed.bets || {},
+      betHistory: Array.isArray(parsed.betHistory) ? parsed.betHistory : [],
+      roundUniqueSet: Array.isArray(parsed.roundUniqueSet) ? parsed.roundUniqueSet : [],
+      freq: Array.isArray(parsed.freq) && parsed.freq.length === 37 ? parsed.freq : Array(37).fill(0),
+      chain: Array.isArray(parsed.chain) && parsed.chain.length ? parsed.chain : base.chain
+    };
+  } catch {
+    return base;
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem("azm_roulette_state_v1", JSON.stringify(state));
+  } catch {}
+}
+
+async function sha256Hex(msg) {
+  try {
+    const enc = new TextEncoder().encode(msg);
+    const buf = await crypto.subtle.digest("SHA-256", enc);
+    return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, "0")).join("");
+  } catch {
+    let h = 2166136261;
+    for (let i = 0; i < msg.length; i++) {
+      h ^= msg.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return ((h >>> 0).toString(16).padStart(8, "0")).repeat(8);
+  }
+}
+
+async function appendBlock(type, details) {
+  const prev = state.chain[state.chain.length - 1];
+  const idx = prev.index + 1;
+  const ts = Date.now();
+  const h = await sha256Hex(`${idx}|${type}|${details}|${ts}|${prev.hash}`);
+  state.chain.push({ index: idx, type, note: details, ts, prevHash: prev.hash, hash: h });
+  if (state.chain.length > 40) state.chain.shift();
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast-banner");
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = "block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => {
+    el.style.display = "none";
+  }, 2800);
+}
+
+function setLang(lang) {
+  state.lang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    const label = btn.textContent.trim();
+    const match = (lang === "ur" && label === "اردو") ||
+                  (lang === "hi" && label === "हिंदी") ||
+                  (lang === "en" && label === "English");
+    btn.classList.toggle("active", match);
+  });
+  saveState();
+  renderAll();
+}
+
+function changeZoom(delta) {
+  state.zoom = Math.min(1.4, Math.max(0.8, Number((Number(state.zoom || 1) + delta).toFixed(2))));
+  applyZoom();
+  saveState();
+}
+
+function resetZoom() {
+  state.zoom = 1;
+  applyZoom();
+  saveState();
+}
+
+function applyZoom() {
+  const z = Number(state.zoom || 1);
+  document.documentElement.style.setProperty("--zoom", z);
+  const lbl = document.getElementById("zoom-label");
+  if (lbl) lbl.textContent = Math.round(z * 100) + "%";
+}
+
+function switchTab(tabName, btnEl) {
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  const target = document.getElementById("panel-" + tabName);
+  if (target) target.classList.add("active");
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  if (btnEl) btnEl.classList.add("active");
+  renderAll();
+}
+
+function getTotalCurrentBetUnits() {
+  let sum = 0n;
+  for (const v of Object.values(state.bets || {})) {
+    sum += BigInt(v || "0");
+  }
+  return sum;
+}
+
+function renderCoinTray() {
+  const tray = document.getElementById("coin-tray");
+  if (!tray) return;
+  const bal = BigInt(state.wallet.balanceUnits || "0");
+  const currentBet = getTotalCurrentBetUnits();
+  const remainingBetCap = BigInt(state.maxBetUnits || "500000000000") - currentBet;
+  const maxAllowedChip = bal < remainingBetCap ? bal : remainingBetCap;
+
+  if (BigInt(state.selectedChipUnits || "100000000") > maxAllowedChip && maxAllowedChip > 0n) {
+    const fitting = [...COIN_DENOMS].reverse().find(c => c.units <= maxAllowedChip);
+    if (fitting) state.selectedChipUnits = fitting.units.toString();
+  }
+
+  tray.innerHTML = "";
+  let firstAffordableEl = null;
+
+  COIN_DENOMS.forEach(c => {
+    const el = document.createElement("div");
+    const isSelected = BigInt(state.selectedChipUnits || "100000000") === c.units;
+    const isAffordable = c.units <= maxAllowedChip && bal > 0n;
+    el.className = "chip-item" + (isSelected ? " selected" : "") + (!isAffordable ? " dimmed" : "");
+    el.textContent = c.label;
+    el.onclick = () => {
+      if (bal <= 0n) {
+        showToast("بیلنس 0 ہے — ریوارڈ سے AZM حاصل کریں");
+        return;
+      }
+      state.selectedChipUnits = c.units.toString();
+      saveState();
+      renderCoinTray();
+    };
+    tray.appendChild(el);
+    if (isAffordable && !firstAffordableEl) firstAffordableEl = el;
+  });
+
+  const selObj = COIN_DENOMS.find(c => c.units.toString() === state.selectedChipUnits);
+  const selLbl = document.getElementById("lbl-selected-chip");
+  if (selLbl) {
+    selLbl.textContent = "Chip: " + (selObj ? selObj.label + " AZM" : fmtAzm(BigInt(state.selectedChipUnits || "100000000")));
+  }
+
+  if (bal < 500000000n && firstAffordableEl) {
+    try {
+      firstAffordableEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    } catch {}
+  }
+}
+
+function buildNumberGrid() {
+  const grid = document.getElementById("nums-3x12");
+  if (!grid) return;
+  grid.innerHTML = "";
+  for (let r = 0; r < 3; r++) {
+    for (let col = 0; col < 12; col++) {
+      const n = col * 3 + (3 - r);
+      const cell = document.createElement("div");
+      const isRed = RED_NUMS.has(n);
+      cell.className = "num-cell " + (isRed ? "red" : "black") + (state.lastHit === n ? " last-hit" : "");
+      cell.id = "cell-" + n;
+      cell.dataset.bet = "NUM_" + n;
+      cell.innerHTML = `<span>${n}</span><span class="hit-count" id="freq-${n}">${state.freq[n] || 0}</span>`;
+      cell.onclick = () => placeBetOnKey("NUM_" + n, cell);
+      grid.appendChild(cell);
+    }
+  }
+  const f0 = document.getElementById("freq-0");
+  if (f0) f0.textContent = state.freq[0] || 0;
+  const z0 = document.getElementById("cell-0");
+  if (z0) z0.classList.toggle("last-hit", state.lastHit === 0);
+  addInvisibleSplitHotspots();
+}
+
+function addInvisibleSplitHotspots() {
+  const grid = document.getElementById("nums-3x12");
+  if (!grid) return;
+  grid.querySelectorAll(".hotspot-invisible").forEach(h => h.remove());
+
+  for (let r = 0; r < 3; r++) {
+    for (let col = 0; col < 11; col++) {
+      const n1 = col * 3 + (3 - r);
+      const n2 = (col + 1) * 3 + (3 - r);
+      const hs = document.createElement("div");
+      hs.className = "hotspot-invisible";
+      hs.dataset.bet = `SPLIT_${Math.min(n1, n2)}_${Math.max(n1, n2)}`;
+      hs.style.width = "16px";
+      hs.style.height = "26px";
+      hs.style.left = `calc(${((col + 1) / 12) * 100}% - 8px)`;
+      hs.style.top = `${r * 60 + 14}px`;
+      hs.onclick = (e) => {
+        e.stopPropagation();
+        placeBetOnKey(hs.dataset.bet, hs);
+      };
+      grid.appendChild(hs);
+    }
+  }
+}
+
+function placeNumber(n, el) {
+  placeBetOnKey("NUM_" + n, el);
+}
+
+function placeOutside(code, el) {
+  placeBetOnKey(code, el);
+}
+
+function placeBetOnKey(betKey, targetEl) {
+  const bal = BigInt(state.wallet.balanceUnits || "0");
+  const chip = BigInt(state.selectedChipUnits || "100000000");
+  const currentBet = getTotalCurrentBetUnits();
+  const maxBet = BigInt(state.maxBetUnits || "500000000000");
+
+  if (bal <= 0n) {
+    showToast("آپ کے والٹ میں AZM بیلنس 0 ہے!");
+    return;
+  }
+  if (chip <= 0n) return;
+
+  const actualAdd = chip <= bal ? chip : bal;
+  if (currentBet + actualAdd > maxBet) {
+    showToast(`زیادہ سے زیادہ داؤ کی حد ${fmtAzm(maxBet)} ہے!`);
+    return;
+  }
+
+  state.wallet.balanceUnits = (bal - actualAdd).toString();
+  const prevKeyUnits = BigInt(state.bets[betKey] || "0");
+  state.bets[betKey] = (prevKeyUnits + actualAdd).toString();
+  state.betHistory.push({ key: betKey, units: actualAdd.toString() });
+
+  saveState();
+  renderAll();
+}
+
+function undoBet() {
+  const last = state.betHistory.pop();
+  if (!last) return;
+  const u = BigInt(last.units);
+  const cur = BigInt(state.bets[last.key] || "0");
+  const nextVal = cur - u;
+  if (nextVal <= 0n) delete state.bets[last.key];
+  else state.bets[last.key] = nextVal.toString();
+
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + u).toString();
+  saveState();
+  renderAll();
+}
+
+function clearBets() {
+  let refund = 0n;
+  for (const v of Object.values(state.bets || {})) refund += BigInt(v || "0");
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + refund).toString();
+  state.bets = {};
+  state.betHistory = [];
+  saveState();
+  renderAll();
+}
+
+function doubleBets() {
+  const currentBet = getTotalCurrentBetUnits();
+  const maxBet = BigInt(state.maxBetUnits || "500000000000");
+  const bal = BigInt(state.wallet.balanceUnits || "0");
+
+  if (currentBet <= 0n) return;
+  if (currentBet * 2n > maxBet) {
+    showToast(`2x کرنے سے داؤ ${fmtAzm(maxBet)} سے بڑھ جائے گا!`);
+    return;
+  }
+  if (bal < currentBet) {
+    showToast("2x کرنے کے لیے والٹ بیلنس ناکافی ہے!");
+    return;
+  }
+
+  state.wallet.balanceUnits = (bal - currentBet).toString();
+  for (const k of Object.keys(state.bets)) {
+    const v = BigInt(state.bets[k]);
+    state.bets[k] = (v * 2n).toString();
+    state.betHistory.push({ key: k, units: v.toString() });
+  }
+  saveState();
+  renderAll();
+}
+
+function ensureRoulettePoolLiquidity(neededUnits) {
+  let house = BigInt(state.buckets.housePoolUnits || "0");
+  let reserve = BigInt(state.buckets.rouletteReserveUnits || "0");
+  const thresh = BigInt(state.refillThresholdUnits || "100000000000000");
+  const batch = BigInt(state.refillBatchUnits || "500000000000000");
+
+  if ((house < thresh || house < neededUnits) && reserve > 0n) {
+    const want = batch > neededUnits ? batch : neededUnits;
+    const transfer = want <= reserve ? want : reserve;
+    reserve -= transfer;
+    house += transfer;
+    state.buckets.rouletteReserveUnits = reserve.toString();
+    state.buckets.housePoolUnits = house.toString();
+    appendBlock("AUTO_REFILL", `Transferred ${fmtAzm(transfer)} from Roulette Reserve to House Pool`);
+  }
+}
+
+function calcPayoutForNumber(betKey, winNum, stakeUnits) {
+  if (betKey === "NUM_" + winNum) return stakeUnits * 36n;
+  if (betKey.startsWith("SPLIT_")) {
+    const parts = betKey.split("_").slice(1).map(Number);
+    if (parts.includes(winNum)) return stakeUnits * 18n;
+  }
+  if (winNum === 0) return 0n;
+  if (betKey === "RED" && RED_NUMS.has(winNum)) return stakeUnits * 2n;
+  if (betKey === "BLACK" && !RED_NUMS.has(winNum)) return stakeUnits * 2n;
+  if (betKey === "EVEN" && winNum % 2 === 0) return stakeUnits * 2n;
+  if (betKey === "ODD" && winNum % 2 === 1) return stakeUnits * 2n;
+  if (betKey === "LOW" && winNum >= 1 && winNum <= 18) return stakeUnits * 2n;
+  if (betKey === "HIGH" && winNum >= 19 && winNum <= 36) return stakeUnits * 2n;
+  if (betKey === "DOZEN_1" && winNum >= 1 && winNum <= 12) return stakeUnits * 3n;
+  if (betKey === "DOZEN_2" && winNum >= 13 && winNum <= 24) return stakeUnits * 3n;
+  if (betKey === "DOZEN_3" && winNum >= 25 && winNum <= 36) return stakeUnits * 3n;
+  return 0n;
+}
+
+async function spinRoulette() {
+  const totalBet = getTotalCurrentBetUnits();
+  if (totalBet <= 0n) {
+    showToast("پہلے ٹیبل پر AZM داؤ لگائیں!");
+    return;
+  }
+
+  const arr = new Uint32Array(1);
+  let winNum = 37;
+  while (winNum > 36) {
+    crypto.getRandomValues(arr);
+    winNum = arr[0] % 64;
+  }
+
+  const modal = document.getElementById("wheel-modal");
+  const animEl = document.getElementById("wheel-result-anim");
+  const outEl = document.getElementById("wheel-outcome-text");
+  modal.classList.add("open");
+  outEl.textContent = "Spinning...";
+
+  let ticks = 0;
+  const interval = setInterval(() => {
+    const randDisp = Math.floor(Math.random() * 37);
+    animEl.textContent = randDisp;
+    animEl.style.background = randDisp === 0 ? "#16803c" : (RED_NUMS.has(randDisp) ? "#c92a2a" : "#1c1f24");
+    ticks++;
+    if (ticks >= 14) {
+      clearInterval(interval);
+      finalizeSpin(winNum, totalBet, animEl, outEl);
+    }
+  }, 85);
+}
+
+async function finalizeSpin(winNum, totalBet, animEl, outEl) {
+  animEl.textContent = winNum;
+  animEl.style.background = winNum === 0 ? "#16803c" : (RED_NUMS.has(winNum) ? "#c92a2a" : "#1c1f24");
+
+  let totalReturn = 0n;
+  for (const [k, vStr] of Object.entries(state.bets || {})) {
+    totalReturn += calcPayoutForNumber(k, winNum, BigInt(vStr));
+  }
+
+  let house = BigInt(state.buckets.housePoolUnits || "0") + totalBet;
+  if (totalReturn > 0n) {
+    if (house < totalReturn) {
+      state.buckets.housePoolUnits = house.toString();
+      ensureRoulettePoolLiquidity(totalReturn - house);
+      house = BigInt(state.buckets.housePoolUnits || "0");
+    }
+    const paid = house >= totalReturn ? totalReturn : house;
+    house -= paid;
+    state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + paid).toString();
+    totalReturn = paid;
+  }
+  state.buckets.housePoolUnits = house.toString();
+
+  state.bets = {};
+  state.betHistory = [];
+  state.spinCount += 1;
+  state.roundSpins += 1;
+  state.freq[winNum] = (state.freq[winNum] || 0) + 1;
+  state.lastHit = winNum;
+  if (!state.roundUniqueSet.includes(winNum)) state.roundUniqueSet.push(winNum);
+  if (state.roundUniqueSet.length >= 37 || state.roundSpins >= 37) {
+    state.roundSpins = 0;
+    state.roundUniqueSet = [];
+  }
+
+  const net = totalReturn - totalBet;
+  outEl.textContent = `Number ${winNum} | Return: ${fmtAzm(totalReturn)} (Net: ${fmtAzm(net)})`;
+  const lastResEl = document.getElementById("ui-last-result");
+  if (lastResEl) lastResEl.textContent = `#${winNum} (${fmtAzm(net)})`;
+
+  await appendBlock("ROULETTE_SPIN", `Spin #${state.spinCount} Hit ${winNum}, Bet ${fmtAzm(totalBet)}, Return ${fmtAzm(totalReturn)}`);
+  saveState();
+  renderAll();
+}
+
+function closeWheelModal() {
+  const m = document.getElementById("wheel-modal");
+  if (m) m.classList.remove("open");
+}
+
+let dragState = null;
+const floatingCoin = document.getElementById("floating-drag-coin");
+const trashZone = document.getElementById("trash-dropzone");
+
+function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
+  let startX = 0, startY = 0, active = false;
+
+  chipEl.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    try { chipEl.setPointerCapture(e.pointerId); } catch {}
+    startX = e.clientX;
+    startY = e.clientY;
+    active = true;
+    dragState = { betKey, units: unitsBig, chipEl, startedDrag: false };
+  });
+
+  chipEl.addEventListener("pointermove", (e) => {
+    if (!active || !dragState) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (!dragState.startedDrag && Math.hypot(dx, dy) > 6) {
+      dragState.startedDrag = true;
+      chipEl.classList.add("dragging-source");
+      if (floatingCoin) {
+        floatingCoin.style.display = "flex";
+        floatingCoin.textContent = fmtShortChip(unitsBig);
+      }
+    }
+    if (dragState.startedDrag) {
+      e.preventDefault();
+      if (floatingCoin) {
+        floatingCoin.style.left = e.clientX + "px";
+        floatingCoin.style.top = e.clientY + "px";
+      }
+      if (trashZone) {
+        const tr = trashZone.getBoundingClientRect();
+        const overTrash = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
+        trashZone.classList.toggle("drag-over", overTrash);
+      }
+    }
+  });
+
+  const finishPointer = (e) => {
+    if (!active || !dragState) return;
+    active = false;
+    const wasDrag = dragState.startedDrag;
+    const sourceKey = dragState.betKey;
+    const moveUnits = dragState.units;
+
+    chipEl.classList.remove("dragging-source");
+    if (floatingCoin) floatingCoin.style.display = "none";
+    if (trashZone) trashZone.classList.remove("drag-over");
+
+    if (!wasDrag) {
+      placeBetOnKey(sourceKey, chipEl.parentElement);
+      dragState = null;
+      return;
+    }
+
+    let overTrash = false;
+    if (trashZone) {
+      const tr = trashZone.getBoundingClientRect();
+      overTrash = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
+    }
+
+    const curSrc = BigInt(state.bets[sourceKey] || "0");
+    const remSrc = curSrc - moveUnits;
+    if (remSrc <= 0n) delete state.bets[sourceKey];
+    else state.bets[sourceKey] = remSrc.toString();
+
+    if (overTrash) {
+      state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + moveUnits).toString();
+      showToast("کوائن والٹ میں واپس کر دیا گیا");
+    } else {
+      const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+      const dropTarget = elemBelow ? elemBelow.closest("[data-bet]") : null;
+      const destKey = dropTarget ? dropTarget.dataset.bet : sourceKey;
+      state.bets[destKey] = (BigInt(state.bets[destKey] || "0") + moveUnits).toString();
+    }
+
+    dragState = null;
+    saveState();
+    renderAll();
+  };
+
+  chipEl.addEventListener("pointerup", finishPointer);
+  chipEl.addEventListener("pointercancel", finishPointer);
+}
+
+function renderPlacedChips() {
+  document.querySelectorAll(".placed-chip").forEach(c => c.remove());
+  for (const [key, valStr] of Object.entries(state.bets || {})) {
+    const u = BigInt(valStr || "0");
+    if (u <= 0n) continue;
+    let host = null;
+    if (key.startsWith("NUM_")) {
+      const n = key.split("_")[1];
+      host = n === "0" ? document.getElementById("cell-0") : document.getElementById("cell-" + n);
+    } else {
+      host = document.querySelector(`[data-bet="${key}"]`);
+    }
+    if (!host) continue;
+    const badge = document.createElement("div");
+    badge.className = "placed-chip";
+    badge.textContent = fmtShortChip(u);
+    host.appendChild(badge);
+    attachPlacedChipDrag(badge, key, u);
+  }
+}
+
+async function claimWelcome() {
+  if (state.welcomeClaimed) {
+    showToast("ویلکم بونس پہلے ہی حاصل کیا جا چکا ہے!");
+    return;
+  }
+  const bonus = 5000000000n;
+  const wRes = BigInt(state.buckets.welcomeUnits || "0");
+  if (wRes < bonus) {
+    showToast("ویلکم ریزرو ختم ہو گیا ہے!");
+    return;
+  }
+  state.buckets.welcomeUnits = (wRes - bonus).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + bonus).toString();
+  state.welcomeClaimed = true;
+  await appendBlock("WELCOME_BONUS", `Credited ${fmtAzm(bonus)} to ${state.wallet.address}`);
+  saveState();
+  renderAll();
+  showToast("50.00000000 AZM ویلکم بونس مل گیا!");
+}
+
+async function claimAdReward() {
+  const amt = 500000000n;
+  const rew = BigInt(state.buckets.rewardUnits || "0");
+  if (rew < amt) {
+    showToast("ریوارڈ بکٹ میں بیلنس کم ہے!");
+    return;
+  }
+  state.buckets.rewardUnits = (rew - amt).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
+  state.adCount += 1;
+  await appendBlock("AD_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
+  saveState();
+  renderAll();
+  showToast("Watch Ad: +5.00000000 AZM شامل ہو گئے!");
+}
+
+async function claimDailyReward() {
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (now - Number(state.lastDailyClaim || 0) < dayMs) {
+    showToast("24 گھنٹے بعد دوبارہ ڈیلی بونس ملے گا!");
+    return;
+  }
+  const amt = 100000000n;
+  const rew = BigInt(state.buckets.rewardUnits || "0");
+  if (rew < amt) return;
+  state.buckets.rewardUnits = (rew - amt).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
+  state.lastDailyClaim = now;
+  await appendBlock("DAILY_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
+  saveState();
+  renderAll();
+  showToast("Daily Bonus: +1.00000000 AZM شامل ہو گیا!");
+}
+
+async function claimRefReward() {
+  const amt = 1000000000n;
+  const rew = BigInt(state.buckets.rewardUnits || "0");
+  if (rew < amt) return;
+  state.buckets.rewardUnits = (rew - amt).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
+  state.refCount += 1;
+  await appendBlock("REF_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
+  saveState();
+  renderAll();
+  showToast("Refer Bonus: +10.00000000 AZM شامل ہو گئے!");
+}
+
+async function sendSignedAzm() {
+  const toAddr = document.getElementById("send-to").value.trim();
+  const amtNum = parseFloat(document.getElementById("send-amt").value);
+  if (!toAddr || isNaN(amtNum) || amtNum <= 0) {
+    showToast("درست ایڈریس اور رقم درج کریں!");
+    return;
+  }
+  const units = BigInt(Math.round(amtNum * 1e8));
+  const bal = BigInt(state.wallet.balanceUnits || "0");
+  if (units > bal) {
+    showToast("والٹ بیلنس ناکافی ہے!");
+    return;
+  }
+
+  state.wallet.balanceUnits = (bal - units).toString();
+  const payload = `${state.wallet.address}->${toAddr}:${units.toString()}|pub:${state.wallet.publicKey}`;
+  const sig = await sha256Hex(payload + "|sig:" + state.wallet.privateKey);
+
+  const box = document.getElementById("last-sig-box");
+  if (box) {
+    box.style.display = "block";
+    box.textContent = `Signed Tx Sent: ${fmtAzm(units)} to ${toAddr}\nDigital Signature (SHA-256): 0x${sig}`;
+  }
+
+  await appendBlock("SIGNED_TRANSFER", `From ${state.wallet.address} to ${toAddr}: ${fmtAzm(units)} | Sig: 0x${sig.slice(0, 16)}...`);
+  saveState();
+  renderAll();
+  showToast("ڈیجیٹل دستخط کے ساتھ ٹرانزیکشن مکمل!");
+}
+
+function togglePrivKey() {
+  state.showPrivKey = !state.showPrivKey;
+  renderWalletTab();
+}
+
+function newWalletKeys() {
+  const bal = state.wallet.balanceUnits;
+  const kp = createKeypair();
+  state.wallet = {
+    address: kp.addr,
+    publicKey: kp.pubKey,
+    privateKey: kp.priv,
+    balanceUnits: bal
+  };
+  saveState();
+  renderWalletTab();
+  showToast("نئی پرائیویٹ اور پبلک کی تیار ہو گئی!");
+}
+
+function copyText(txt) {
+  try {
+    navigator.clipboard?.writeText(txt);
+  } catch {}
+  showToast("کاپی ہو گیا!");
+}
+
+function drawSimpleQr(canvas, text) {
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+  const size = canvas.width;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, size, size);
+
+  const cells = 21;
+  const margin = 12;
+  const cellPx = Math.floor((size - margin * 2) / cells);
+
+  let seed = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    seed ^= text.charCodeAt(i);
+    seed = Math.imul(seed, 16777619);
+  }
+
+  ctx.fillStyle = "#0b1712";
+  for (let r = 0; r < cells; r++) {
+    for (let c = 0; c < cells; c++) {
+      const inTopLeft = r < 7 && c < 7;
+      const inTopRight = r < 7 && c >= cells - 7;
+      const inBotLeft = r >= cells - 7 && c < 7;
+      let dark = false;
+      if (inTopLeft || inTopRight || inBotLeft) {
+        const lr = inBotLeft ? r - (cells - 7) : r;
+        const lc = inTopRight ? c - (cells - 7) : c;
+        const border = lr === 0 || lr === 6 || lc === 0 || lc === 6;
+        const center = lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4;
+        dark = border || center;
+      } else {
+        seed ^= seed << 13;
+        seed ^= seed >>> 17;
+        seed ^= seed << 5;
+        dark = ((seed >>> 0) % 2) === 0;
+      }
+      if (dark) {
+        ctx.fillRect(margin + c * cellPx, margin + r * cellPx, cellPx, cellPx);
+      }
+    }
+  }
+}
+
+function unlockVault() {
+  const pin = document.getElementById("vault-pin").value.trim();
+  if (pin === "AZM-MASTER-2026") {
+    document.getElementById("vault-controls").style.display = "block";
+    showToast("ماسٹر والٹ کھل گیا!");
+  } else {
+    showToast("غلط ماسٹر کوڈ!");
+  }
+}
+
+function updateMaxBet() {
+  const val = parseFloat(document.getElementById("max-bet-input").value);
+  if (isNaN(val) || val <= 0) return;
+  state.maxBetUnits = BigInt(Math.round(val * 1e8)).toString();
+  saveState();
+  renderAll();
+  showToast(`نئی میکس بیٹ لمٹ: ${fmtAzm(BigInt(state.maxBetUnits))}`);
+}
+
+function updateRefillThresh() {
+  const val = parseFloat(document.getElementById("refill-thresh-input").value);
+  if (isNaN(val) || val <= 0) return;
+  state.refillThresholdUnits = BigInt(Math.round(val * 1e8)).toString();
+  saveState();
+  renderAll();
+  showToast("آٹو ری فل حد اپ ڈیٹ ہو گئی!");
+}
+
+function renderWalletTab() {
+  const pubAddr = document.getElementById("w-pub-addr");
+  const pubKey = document.getElementById("w-pub-key");
+  const privKey = document.getElementById("w-priv-key");
+  if (pubAddr) pubAddr.textContent = state.wallet.address;
+  if (pubKey) pubKey.textContent = state.wallet.publicKey;
+  if (privKey) privKey.textContent = state.showPrivKey ? state.wallet.privateKey : "••••••••••••••••••••••••••••••••";
+  drawSimpleQr(document.getElementById("qr-canvas"), state.wallet.address);
+}
+
+function renderBucketsTab() {
+  const w = BigInt(state.buckets.welcomeUnits || "0");
+  const r = BigInt(state.buckets.rouletteReserveUnits || "0");
+  const rw = BigInt(state.buckets.rewardUnits || "0");
+  const h = BigInt(state.buckets.housePoolUnits || "0");
+  const p = BigInt(state.wallet.balanceUnits || "0");
+  const bet = getTotalCurrentBetUnits();
+  const sumAll = w + r + rw + h + p + bet;
+
+  const bw = document.getElementById("b-welcome");
+  const br = document.getElementById("b-roulette");
+  const brw = document.getElementById("b-reward");
+  const bh = document.getElementById("b-house");
+  const sc = document.getElementById("supply-check-box");
+  const ll = document.getElementById("ledger-list");
+
+  if (bw) bw.textContent = fmtAzm(w);
+  if (br) br.textContent = fmtAzm(r);
+  if (brw) brw.textContent = fmtAzm(rw);
+  if (bh) bh.textContent = fmtAzm(h);
+  if (sc) {
+    sc.textContent = `Fixed Supply Check: ${fmtAzm(sumAll)} / ${fmtAzm(TOTAL_SUPPLY_UNITS)} (${sumAll === TOTAL_SUPPLY_UNITS ? "VERIFIED 100%" : "CHECK"})`;
+  }
+  if (ll) {
+    ll.innerHTML = [...state.chain].reverse().slice(0, 8).map(b =>
+      `<div class="mono-box">#${b.index} [${b.type}] ${b.note}<br/>Hash: ${b.hash}</div>`
+    ).join("");
+  }
+}
+
+function renderAll() {
+  try {
+    const bal = BigInt(state.wallet.balanceUnits || "0");
+    const bet = getTotalCurrentBetUnits();
+    const maxBet = BigInt(state.maxBetUnits || "500000000000");
+
+    const uiBal = document.getElementById("ui-balance");
+    const uiBet = document.getElementById("ui-current-bet");
+    const uiMax = document.getElementById("ui-max-bet");
+    const uiSpin = document.getElementById("ui-spin-info");
+    const uiHC = document.getElementById("ui-hot-cold");
+
+    if (uiBal) uiBal.textContent = fmtAzm(bal);
+    if (uiBet) uiBet.textContent = fmtAzm(bet);
+    if (uiMax) uiMax.textContent = fmtAzm(maxBet);
+    if (uiSpin) uiSpin.textContent = `Spins: ${state.spinCount || 0} | R1: ${(state.roundUniqueSet || []).length}/37`;
+
+    const pairs = (state.freq || Array(37).fill(0)).map((cnt, num) => ({ num, cnt: Number(cnt || 0) }));
+    const sortedHot = [...pairs].sort((a, b) => b.cnt - a.cnt);
+    const hotStr = sortedHot.slice(0, 3).map(x => `${x.num}(${x.cnt})`).join(", ");
+    const coldStr = [...pairs].sort((a, b) => a.cnt - b.cnt).slice(0, 3).map(x => `${x.num}(${x.cnt})`).join(", ");
+    if (uiHC) uiHC.textContent = `Hot: ${hotStr} | Cold: ${coldStr}`;
+  } catch {}
+
+  try { renderCoinTray(); } catch {}
+  try { buildNumberGrid(); } catch {}
+  try { renderPlacedChips(); } catch {}
+  try { renderWalletTab(); } catch {}
+  try { renderBucketsTab(); } catch {}
+}
+
+applyZoom();
+renderAll();
+</script>
+</body>
+</html>
