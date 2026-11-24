@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes" />
-<title>AZM &amp; European Roulette</title>
+<title>AZM &amp; European Roulette — Master Wallet</title>
 <style>
   :root {
     --bg-felt: #0b4a2e;
@@ -42,10 +42,9 @@
   }
 
   .top-bar {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgba(10, 24, 18, 0.95);
+    position: relative;
+    z-index: 20;
+    background: rgba(10, 24, 18, 0.96);
     border-bottom: 1px solid var(--border-gold);
     padding: 10px 12px;
     display: flex;
@@ -99,19 +98,19 @@
 
   .nav-tabs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    padding: 10px 12px 4px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    padding: 10px 10px 4px;
   }
 
   .tab-btn {
-    padding: 8px 6px;
+    padding: 8px 4px;
     border-radius: 10px;
     border: 1px solid var(--border-gold);
     background: var(--bg-card);
     color: var(--text-main);
     font-weight: 700;
-    font-size: 11.5px;
+    font-size: 11px;
     cursor: pointer;
     text-align: center;
     line-height: 1.25;
@@ -157,7 +156,7 @@
   }
 
   .stat-val {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 800;
     color: var(--gold);
     direction: ltr;
@@ -340,12 +339,13 @@
 
   .placed-chip {
     position: absolute;
-    bottom: 3px;
-    right: 3px;
-    z-index: 12;
-    min-width: 26px;
-    height: 26px;
-    padding: 0 4px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 5px;
     border-radius: 999px;
     background: radial-gradient(circle at 30% 30%, #ffe066, #c98608);
     color: #101612;
@@ -355,8 +355,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.75);
     cursor: grab;
     touch-action: none;
+    user-select: none;
   }
 
   #floating-drag-coin {
@@ -364,8 +366,9 @@
     z-index: 9999;
     pointer-events: none;
     display: none;
-    min-width: 42px;
-    height: 42px;
+    min-width: 46px;
+    height: 46px;
+    padding: 0 6px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, #ffe77a, #b87504);
     color: #0e1511;
@@ -375,23 +378,26 @@
     align-items: center;
     justify-content: center;
     transform: translate(-50%, -50%);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.85);
   }
 
   .trash-dropzone {
     margin-top: 10px;
-    border: 2px dashed rgba(255, 107, 107, 0.75);
-    background: rgba(201, 42, 42, 0.16);
-    color: #ffc9c9;
+    border: 2px dashed rgba(255, 107, 107, 0.85);
+    background: rgba(201, 42, 42, 0.18);
+    color: #ffd6d6;
     border-radius: 12px;
-    padding: 10px;
+    padding: 11px;
     text-align: center;
     font-weight: 800;
     font-size: 12px;
+    cursor: pointer;
   }
 
   .trash-dropzone.drag-over {
-    background: rgba(224, 49, 49, 0.45);
+    background: rgba(224, 49, 49, 0.6);
     border-style: solid;
+    color: #ffffff;
   }
 
   .action-row {
@@ -577,6 +583,7 @@
     <button class="tab-btn active" onclick="switchTab('roulette', this)" id="tab-roulette">🎡 رولیٹ</button>
     <button class="tab-btn" onclick="switchTab('wallet', this)" id="tab-wallet">🪙 والٹ</button>
     <button class="tab-btn" onclick="switchTab('buckets', this)" id="tab-buckets">🪣 بکٹس</button>
+    <button class="tab-btn" onclick="switchTab('contract', this)" id="tab-contract">📜 کنٹریکٹ</button>
     <button class="tab-btn" onclick="switchTab('vault', this)" id="tab-vault">👑 ماسٹر</button>
   </nav>
 
@@ -640,8 +647,8 @@
           </div>
         </div>
 
-        <div class="trash-dropzone" id="trash-dropzone">
-          🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں
+        <div class="trash-dropzone" id="trash-dropzone" onclick="refundAllOrHint()">
+          🗑️ کوائن ہٹانے یا سرکانے کے لیے یہاں کھینچ کر چھوڑیں
         </div>
 
         <div class="action-row">
@@ -742,6 +749,23 @@
       </div>
     </section>
 
+    <section id="panel-contract" class="panel">
+      <div class="card">
+        <h3 class="card-title" id="c-main-title">📜 AZM اسمارٹ کنٹریکٹ اور رولز</h3>
+        <div class="mono-box" id="contract-spec-box">Token Name: AZM (Azm)
+Standard: AZM-Ledger-v1 + SHA-256 Block Hash
+Decimals: 8 (1u = 0.00000001 AZM)
+Fixed Total Supply: 1,000,000,000.00000000 AZM
+Payouts: Straight 36x | Dozens 3x | Even/Odd/Red/Black/1-18/19-36 2x
+Offline Transfer: Signed Base64 Packet (AZM-BT-V1)</div>
+        <div class="input-row">
+          <button class="btn btn-gold" id="btn-verify-chain" onclick="verifyChainNow()">✅ Verify Blockchain &amp; Supply</button>
+          <button class="btn" id="btn-copy-contract" onclick="copyText(document.getElementById('contract-spec-box').textContent)">📋 Copy Spec</button>
+        </div>
+        <div id="contract-verify-out" class="mono-box">Status: Ready</div>
+      </div>
+    </section>
+
     <section id="panel-vault" class="panel">
       <div class="card">
         <h3 class="card-title" id="v-main-title">👑 ماسٹر والٹ کنٹرول</h3>
@@ -796,13 +820,14 @@ const I18N = {
     tabRoulette: "🎡 رولیٹ",
     tabWallet: "🪙 والٹ",
     tabBuckets: "🪣 بکٹس",
+    tabContract: "📜 کنٹریکٹ",
     tabVault: "👑 ماسٹر",
     lblBalance: "والٹ بیلنس (AZM)",
     lblCurrentBet: "موجودہ داؤ (فی اسپن)",
     lblMaxBet: "میکس بیٹ لمٹ",
     lblLastWin: "آخری نتیجہ",
     lblCoinTray: "تمام کوائنز (دائیں/بائیں اسکرول کریں)",
-    trashText: "🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں",
+    trashText: "🗑️ کوائن ہٹانے یا سرکانے کے لیے یہاں کھینچ کر چھوڑیں",
     btnClear: "صاف",
     btnUndo: "واپس",
     btnDouble: "2x",
@@ -835,6 +860,9 @@ const I18N = {
     bLblReward: "3. ریوارڈ و فیس بکٹ",
     bLblHouse: "ہاؤس پول",
     bLedgerTitle: "⛓️ SHA-256 لیجر",
+    cMainTitle: "📜 AZM اسمارٹ کنٹریکٹ اور رولز",
+    btnVerifyChain: "✅ بلاک چین اور سپلائی تصدیق کریں",
+    btnCopyContract: "📋 تفصیل کاپی کریں",
     vMainTitle: "👑 ماسٹر والٹ کنٹرول",
     vaultPinPh: "AZM-MASTER-2026",
     btnUnlockVault: "کھولیں",
@@ -851,13 +879,14 @@ const I18N = {
     tabRoulette: "🎡 रूलेट",
     tabWallet: "🪙 वॉलेट",
     tabBuckets: "🪣 बकेट्स",
+    tabContract: "📜 कॉन्ट्रैक्ट",
     tabVault: "👑 मास्टर",
     lblBalance: "वॉलेट बैलेंस (AZM)",
     lblCurrentBet: "मौजूदा दांव (प्रति स्पिन)",
     lblMaxBet: "मैक्स बेट लिमिट",
     lblLastWin: "आखिरी नतीजा",
     lblCoinTray: "सभी कॉइन्स (दाएं/बाएं स्क्रॉल करें)",
-    trashText: "🗑️ कॉइन हटाने के लिए यहां खींचकर छोड़ें",
+    trashText: "🗑️ कॉइन हटाने या सरकाने के लिए यहां खींचकर छोड़ें",
     btnClear: "साफ़",
     btnUndo: "वापस",
     btnDouble: "2x",
@@ -890,6 +919,9 @@ const I18N = {
     bLblReward: "3. रिवॉर्ड व फ़ीस बकेट",
     bLblHouse: "हाउस पूल",
     bLedgerTitle: "⛓️ SHA-256 लेजर",
+    cMainTitle: "📜 AZM स्मार्ट कॉन्ट्रैक्ट और नियम",
+    btnVerifyChain: "✅ ब्लॉकचेन और सप्लाई जांचें",
+    btnCopyContract: "📋 विवरण कॉपी करें",
     vMainTitle: "👑 मास्टर वॉलेट कंट्रोल",
     vaultPinPh: "AZM-MASTER-2026",
     btnUnlockVault: "खोलें",
@@ -906,13 +938,14 @@ const I18N = {
     tabRoulette: "🎡 Roulette",
     tabWallet: "🪙 Wallet",
     tabBuckets: "🪣 Buckets",
+    tabContract: "📜 Contract",
     tabVault: "👑 Master",
     lblBalance: "Wallet Balance (AZM)",
     lblCurrentBet: "Current Bet (Per Spin)",
     lblMaxBet: "Max Bet Limit",
     lblLastWin: "Last Result",
     lblCoinTray: "All Coins (Scroll Left / Right)",
-    trashText: "🗑️ Drag Coin Here to Remove",
+    trashText: "🗑️ Drag Coin Here to Remove or Move",
     btnClear: "Clear",
     btnUndo: "Undo",
     btnDouble: "2x",
@@ -945,6 +978,9 @@ const I18N = {
     bLblReward: "3. Reward & Tx Bucket",
     bLblHouse: "House Pool",
     bLedgerTitle: "⛓️ SHA-256 Ledger",
+    cMainTitle: "📜 AZM Smart Contract & Rules",
+    btnVerifyChain: "✅ Verify Blockchain & Supply",
+    btnCopyContract: "📋 Copy Spec",
     vMainTitle: "👑 Master Vault Control",
     vaultPinPh: "AZM-MASTER-2026",
     btnUnlockVault: "Unlock",
@@ -987,10 +1023,14 @@ function fmtAzm(unitsBig) {
 
 function fmtShortChip(unitsBig) {
   const b = BigInt(unitsBig || 0n);
+  if (b === 1n) return "1u";
+  if (b < DECIMALS) {
+    return (Number(b) / 1e8).toFixed(8).replace(/0+$/, "").replace(/\.$/, "");
+  }
   const whole = b / DECIMALS;
   const frac = b % DECIMALS;
-  if (frac === 0n) return whole.toString();
-  return (Number(b) / 1e8).toString();
+  if (frac === 0n) return whole.toLocaleString("en-US");
+  return whole.toString() + "." + frac.toString().padStart(8, "0").replace(/0+$/, "");
 }
 
 function randomHex(bytesLen) {
@@ -1016,8 +1056,6 @@ function defaultState() {
     refillBatchUnits: "500000000000000",
     welcomeClaimed: false,
     lastDailyClaim: 0,
-    adCount: 0,
-    refCount: 0,
     selectedChipUnits: "100000000",
     showPrivKey: false,
     lastResultText: "—",
@@ -1051,7 +1089,7 @@ let state = loadState();
 function loadState() {
   const base = defaultState();
   try {
-    const raw = localStorage.getItem("azm_roulette_state_v3");
+    const raw = localStorage.getItem("azm_roulette_state_v5");
     if (!raw) return base;
     const p = JSON.parse(raw);
     return {
@@ -1071,7 +1109,7 @@ function loadState() {
 }
 
 function saveState() {
-  try { localStorage.setItem("azm_roulette_state_v3", JSON.stringify(state)); } catch {}
+  try { localStorage.setItem("azm_roulette_state_v5", JSON.stringify(state)); } catch {}
 }
 
 async function sha256Hex(msg) {
@@ -1116,6 +1154,7 @@ function applyLanguageTexts() {
     "tab-roulette": d.tabRoulette,
     "tab-wallet": d.tabWallet,
     "tab-buckets": d.tabBuckets,
+    "tab-contract": d.tabContract,
     "tab-vault": d.tabVault,
     "lbl-balance": d.lblBalance,
     "lbl-current-bet": d.lblCurrentBet,
@@ -1152,6 +1191,9 @@ function applyLanguageTexts() {
     "b-lbl-reward": d.bLblReward,
     "b-lbl-house": d.bLblHouse,
     "b-ledger-title": d.bLedgerTitle,
+    "c-main-title": d.cMainTitle,
+    "btn-verify-chain": d.btnVerifyChain,
+    "btn-copy-contract": d.btnCopyContract,
     "v-main-title": d.vMainTitle,
     "btn-unlock-vault": d.btnUnlockVault,
     "v-lbl-maxbet": d.vLblMaxBet,
@@ -1294,6 +1336,15 @@ function placeBetOnKey(betKey) {
   state.betHistory.push({ key: betKey, units: add.toString() });
   saveState();
   renderAll();
+}
+
+function refundAllOrHint() {
+  if (getTotalCurrentBetUnits() > 0n) {
+    clearBets();
+    showToast("All table coins refunded to wallet");
+  } else {
+    showToast("Drag any coin from table to move or remove");
+  }
 }
 
 function undoBet() {
@@ -1515,6 +1566,21 @@ let dragState = null;
 const floatingCoin = document.getElementById("floating-drag-coin");
 const trashZone = document.getElementById("trash-dropzone");
 
+function isPointInside(x, y, rect) {
+  return rect && x >= rect.left - 8 && x <= rect.right + 8 && y >= rect.top - 8 && y <= rect.bottom + 8;
+}
+
+function findBetTargetAtPoint(x, y) {
+  const targets = document.querySelectorAll("[data-bet]");
+  for (const el of targets) {
+    const r = el.getBoundingClientRect();
+    if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+      return el.dataset.bet;
+    }
+  }
+  return null;
+}
+
 function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
   let sx = 0, sy = 0, active = false;
 
@@ -1527,9 +1593,9 @@ function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
 
   chipEl.addEventListener("pointermove", (e) => {
     if (!active || !dragState) return;
-    if (!dragState.started && Math.hypot(e.clientX - sx, e.clientY - sy) > 6) {
+    if (!dragState.started && Math.hypot(e.clientX - sx, e.clientY - sy) > 4) {
       dragState.started = true;
-      chipEl.style.opacity = "0.35";
+      chipEl.style.opacity = "0.25";
       floatingCoin.style.display = "flex";
       floatingCoin.textContent = fmtShortChip(unitsBig);
     }
@@ -1538,7 +1604,7 @@ function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
       floatingCoin.style.left = e.clientX + "px";
       floatingCoin.style.top = e.clientY + "px";
       const tr = trashZone.getBoundingClientRect();
-      trashZone.classList.toggle("drag-over", e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom);
+      trashZone.classList.toggle("drag-over", isPointInside(e.clientX, e.clientY, tr));
     }
   });
 
@@ -1553,23 +1619,26 @@ function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
     trashZone.classList.remove("drag-over");
     dragState = null;
 
-    if (!wasDrag) { placeBetOnKey(srcKey); return; }
+    if (!wasDrag) {
+      placeBetOnKey(srcKey);
+      return;
+    }
 
     const tr = trashZone.getBoundingClientRect();
-    const overTrash = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
+    const overTrash = isPointInside(e.clientX, e.clientY, tr);
+    const dstKey = findBetTargetAtPoint(e.clientX, e.clientY) || srcKey;
 
-    const rem = BigInt(state.bets[srcKey] || "0") - moveU;
+    const curVal = BigInt(state.bets[srcKey] || "0");
+    const rem = curVal > moveU ? curVal - moveU : 0n;
     if (rem <= 0n) delete state.bets[srcKey];
     else state.bets[srcKey] = rem.toString();
 
     if (overTrash) {
-      state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + moveU).toString();
-      showToast("Refunded to Wallet");
+      state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + moveU).toString();
+      showToast("Coin removed & refunded");
     } else {
-      const below = document.elementFromPoint(e.clientX, e.clientY);
-      const target = below ? below.closest("[data-bet]") : null;
-      const dstKey = target ? target.dataset.bet : srcKey;
       state.bets[dstKey] = (BigInt(state.bets[dstKey] || "0") + moveU).toString();
+      if (dstKey !== srcKey) showToast("Coin moved");
     }
     saveState();
     renderAll();
@@ -1686,6 +1755,20 @@ async function applyOfflinePacket() {
   } catch { showToast("Invalid packet"); }
 }
 
+function verifyChainNow() {
+  const w = BigInt(state.buckets.welcomeUnits || "0");
+  const r = BigInt(state.buckets.rouletteReserveUnits || "0");
+  const rw = BigInt(state.buckets.rewardUnits || "0");
+  const h = BigInt(state.buckets.housePoolUnits || "0");
+  const p = BigInt(state.wallet.balanceUnits || "0");
+  const bet = getTotalCurrentBetUnits();
+  const sumAll = w + r + rw + h + p + bet;
+  const ok = sumAll === TOTAL_SUPPLY_UNITS;
+  document.getElementById("contract-verify-out").textContent =
+    `Blocks: ${state.chain.length}\nTotal Accounted Supply: ${fmtAzm(sumAll)}\nFixed Supply Target: ${fmtAzm(TOTAL_SUPPLY_UNITS)}\nIntegrity: ${ok ? "VERIFIED (100%)" : "CHECK"}`;
+  showToast(ok ? "Contract & Supply Verified" : "Check Supply");
+}
+
 function togglePrivKey() { state.showPrivKey = !state.showPrivKey; renderWalletTab(); }
 function newWalletKeys() {
   const bal = state.wallet.balanceUnits;
@@ -1740,7 +1823,7 @@ function updateRefillThresh() {
 }
 
 function resetDemoState() {
-  localStorage.removeItem("azm_roulette_state_v3");
+  localStorage.removeItem("azm_roulette_state_v5");
   state = defaultState();
   saveState(); applyLanguageTexts(); renderAll(); showToast("Reset Done");
 }
@@ -1768,7 +1851,7 @@ function renderBucketsTab() {
   document.getElementById("supply-check-box").textContent =
     `Supply: ${fmtAzm(sumAll)} / ${fmtAzm(TOTAL_SUPPLY_UNITS)} (${sumAll === TOTAL_SUPPLY_UNITS ? "100% LOCKED" : "CHECK"})`;
 
-  document.getElementById("ledger-list").innerHTML = [...state.chain].reverse().slice(0, 6)
+  document.getElementById("ledger-list").innerHTML = [...state.chain].reverse().slice(0, 8)
     .map(b => `<div class="mono-box">#${b.index} [${b.type}] ${b.note}\n${b.hash}</div>`).join("");
 }
 
