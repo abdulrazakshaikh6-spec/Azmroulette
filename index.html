@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes" />
-<title>عزم (AZM) &amp; یورپین رولیٹ کاؤنٹر — ماسٹر والٹ</title>
+<title>AZM &amp; European Roulette</title>
 <style>
   :root {
     --bg-felt: #0b4a2e;
@@ -12,7 +12,6 @@
     --bg-panel: #0f1b16;
     --bg-card: #15261f;
     --gold: #f5c542;
-    --gold-soft: rgba(245, 197, 66, 0.22);
     --red-num: #c92a2a;
     --black-num: #1c1f24;
     --green-zero: #16803c;
@@ -27,11 +26,6 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-
   body {
     margin: 0;
     padding: 0 0 90px 0;
@@ -39,22 +33,19 @@
     color: var(--text-main);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", "Noto Sans Devanagari", sans-serif;
     overflow-x: hidden;
-    overscroll-behavior-y: contain;
   }
 
   #app-zoom-wrap {
     transform: scale(var(--zoom));
     transform-origin: top center;
     width: calc(100% / var(--zoom));
-    transition: transform 0.15s ease-out;
   }
 
   .top-bar {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(10, 24, 18, 0.94);
-    backdrop-filter: blur(10px);
+    background: rgba(10, 24, 18, 0.95);
     border-bottom: 1px solid var(--border-gold);
     padding: 10px 12px;
     display: flex;
@@ -73,8 +64,9 @@
     color: var(--gold);
   }
 
-  .lang-group {
+  .lang-group, .zoom-controls {
     display: flex;
+    align-items: center;
     gap: 5px;
   }
 
@@ -86,18 +78,12 @@
     border-radius: 999px;
     font-size: 12px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .lang-btn.active {
     background: var(--gold);
     color: #0b1712;
-  }
-
-  .zoom-controls {
-    display: flex;
-    align-items: center;
-    gap: 4px;
   }
 
   .zoom-btn {
@@ -112,24 +98,23 @@
   }
 
   .nav-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
     padding: 10px 12px 4px;
-    overflow-x: auto;
   }
 
   .tab-btn {
-    flex: 1;
-    min-width: 96px;
-    padding: 9px 10px;
+    padding: 8px 6px;
     border-radius: 10px;
     border: 1px solid var(--border-gold);
     background: var(--bg-card);
     color: var(--text-main);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 11.5px;
     cursor: pointer;
-    white-space: nowrap;
+    text-align: center;
+    line-height: 1.25;
   }
 
   .tab-btn.active {
@@ -144,13 +129,8 @@
     padding: 10px 12px;
   }
 
-  .panel {
-    display: none;
-  }
-
-  .panel.active {
-    display: block;
-  }
+  .panel { display: none; }
+  .panel.active { display: block; }
 
   .wallet-strip {
     background: var(--bg-panel);
@@ -159,7 +139,7 @@
     padding: 12px;
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
@@ -177,18 +157,19 @@
   }
 
   .stat-val {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 800;
     color: var(--gold);
     direction: ltr;
     text-align: start;
+    word-break: break-word;
   }
 
-  .coin-tray-wrap {
+  .coin-tray-wrap, .card {
     background: var(--bg-panel);
     border: 1px solid var(--border-gold);
     border-radius: 14px;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 10px;
   }
 
@@ -206,14 +187,12 @@
     gap: 8px;
     overflow-x: auto;
     padding: 6px 4px 10px;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
   }
 
   .chip-item {
     flex: 0 0 auto;
-    min-width: 58px;
-    height: 58px;
+    min-width: 56px;
+    height: 56px;
     border-radius: 50%;
     border: 3px dashed #fff3c4;
     background: radial-gradient(circle at 30% 30%, #ffd859, #b87b08);
@@ -221,108 +200,63 @@
     font-weight: 900;
     font-size: 11px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
-    transition: transform 0.14s ease, opacity 0.2s ease;
     direction: ltr;
   }
 
   .chip-item.selected {
-    transform: translateY(-4px) scale(1.08);
+    transform: translateY(-3px) scale(1.06);
     border-style: solid;
     border-color: #ffffff;
-    box-shadow: 0 0 0 3px var(--gold), 0 8px 16px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 3px var(--gold);
   }
 
-  .chip-item.dimmed {
-    opacity: 0.35;
-  }
+  .chip-item.dimmed { opacity: 0.35; }
 
   .roulette-board {
-    position: relative;
     background: linear-gradient(180deg, var(--bg-felt) 0%, var(--bg-felt-dark) 100%);
     border: 3px solid var(--gold);
     border-radius: 18px;
     padding: 12px;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.55), 0 12px 24px rgba(0, 0, 0, 0.5);
     direction: ltr;
   }
 
   .top-meta-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     gap: 8px;
     margin-bottom: 10px;
     flex-wrap: wrap;
   }
 
   .badge-pill {
-    background: rgba(0, 0, 0, 0.42);
+    background: rgba(0, 0, 0, 0.45);
     border: 1px solid var(--border-gold);
     border-radius: 999px;
-    padding: 5px 12px;
-    font-size: 12px;
+    padding: 5px 11px;
+    font-size: 11.5px;
     font-weight: 700;
   }
 
   .table-grid-shell {
     position: relative;
     display: grid;
-    grid-template-columns: 64px 74px 1fr;
+    grid-template-columns: 60px 68px 1fr;
     gap: 6px;
     user-select: none;
   }
 
-  .outside-col {
+  .outside-col, .dozen-col, .numbers-area {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
-
-  .dozen-col {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .dozen-box {
-    position: relative;
-    flex: 1;
-    min-height: 112px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1.5px solid rgba(245, 197, 66, 0.55);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    font-weight: 800;
-    font-size: 13px;
-    color: #fff5cc;
-    cursor: pointer;
-    touch-action: pan-y;
-  }
-
-  .dozen-zone-strip {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 33.333%;
-    z-index: 2;
-  }
-  .dozen-zone-strip.top { top: 0; }
-  .dozen-zone-strip.mid { top: 33.333%; }
-  .dozen-zone-strip.bot { top: 66.666%; }
 
   .outside-box {
-    position: relative;
     flex: 1;
-    min-height: 54px;
+    min-height: 52px;
     border-radius: 10px;
     border: 1.5px solid rgba(245, 197, 66, 0.55);
     background: rgba(0, 0, 0, 0.28);
@@ -331,23 +265,33 @@
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 12px;
+    font-size: 11.5px;
     cursor: pointer;
-    touch-action: pan-y;
+    position: relative;
   }
 
   .outside-box.red-box { background: rgba(201, 42, 42, 0.85); }
   .outside-box.black-box { background: rgba(24, 27, 32, 0.92); }
 
-  .numbers-area {
+  .dozen-box {
+    flex: 1;
+    min-height: 110px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid rgba(245, 197, 66, 0.55);
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 12px;
+    color: #fff5cc;
+    cursor: pointer;
+    position: relative;
   }
 
   .zero-cell {
-    position: relative;
-    height: 54px;
+    height: 52px;
     background: var(--green-zero);
     border: 1.5px solid var(--gold);
     border-radius: 10px;
@@ -356,21 +300,19 @@
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 17px;
     cursor: pointer;
-    touch-action: pan-y;
+    position: relative;
   }
 
   .nums-3x12 {
-    position: relative;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 5px;
   }
 
   .num-cell {
-    position: relative;
-    height: 54px;
+    height: 52px;
     border-radius: 9px;
     border: 1.5px solid rgba(255, 255, 255, 0.22);
     display: flex;
@@ -378,17 +320,14 @@
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
-    touch-action: pan-y;
+    position: relative;
   }
 
   .num-cell.red { background: var(--red-num); }
   .num-cell.black { background: var(--black-num); }
-  .num-cell.last-hit {
-    box-shadow: 0 0 0 3px var(--gold);
-    border-color: #fff;
-  }
+  .num-cell.last-hit { box-shadow: 0 0 0 3px var(--gold); border-color: #fff; }
 
   .hit-count {
     font-size: 10px;
@@ -399,23 +338,14 @@
     color: #ffe89e;
   }
 
-  .hotspot-invisible {
-    position: absolute;
-    z-index: 6;
-    background: transparent;
-    border: none;
-    pointer-events: auto;
-    touch-action: pan-y;
-  }
-
   .placed-chip {
     position: absolute;
-    bottom: 4px;
-    right: 4px;
+    bottom: 3px;
+    right: 3px;
     z-index: 12;
-    min-width: 28px;
-    height: 28px;
-    padding: 0 5px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 4px;
     border-radius: 999px;
     background: radial-gradient(circle at 30% 30%, #ffe066, #c98608);
     color: #101612;
@@ -425,14 +355,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.65);
     cursor: grab;
     touch-action: none;
-    direction: ltr;
-  }
-
-  .placed-chip.dragging-source {
-    opacity: 0.35;
   }
 
   #floating-drag-coin {
@@ -440,9 +364,8 @@
     z-index: 9999;
     pointer-events: none;
     display: none;
-    min-width: 44px;
-    height: 44px;
-    padding: 0 8px;
+    min-width: 42px;
+    height: 42px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, #ffe77a, #b87504);
     color: #0e1511;
@@ -451,29 +374,24 @@
     font-size: 11px;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
-    transform: translate(-50%, -50%) scale(1.12);
-    direction: ltr;
+    transform: translate(-50%, -50%);
   }
 
   .trash-dropzone {
     margin-top: 10px;
-    border: 2px dashed rgba(255, 107, 107, 0.7);
-    background: rgba(201, 42, 42, 0.14);
+    border: 2px dashed rgba(255, 107, 107, 0.75);
+    background: rgba(201, 42, 42, 0.16);
     color: #ffc9c9;
     border-radius: 12px;
-    padding: 11px;
+    padding: 10px;
     text-align: center;
     font-weight: 800;
-    font-size: 13px;
-    transition: all 0.15s ease;
+    font-size: 12px;
   }
 
   .trash-dropzone.drag-over {
     background: rgba(224, 49, 49, 0.45);
     border-style: solid;
-    border-color: #ff8787;
-    transform: scale(1.01);
   }
 
   .action-row {
@@ -484,13 +402,13 @@
   }
 
   .btn {
-    padding: 11px 8px;
+    padding: 10px 8px;
     border-radius: 11px;
     border: 1px solid var(--border-gold);
     background: var(--bg-card);
     color: var(--text-main);
     font-weight: 800;
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
   }
 
@@ -498,7 +416,7 @@
     background: linear-gradient(135deg, #22c55e, #15803d);
     color: #ffffff;
     border-color: #86efac;
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .btn-gold {
@@ -512,14 +430,6 @@
     color: #ffc9c9;
   }
 
-  .card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-gold);
-    border-radius: 14px;
-    padding: 14px;
-    margin-bottom: 12px;
-  }
-
   .card-title {
     font-size: 15px;
     font-weight: 800;
@@ -529,7 +439,7 @@
 
   .buckets-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
   }
 
@@ -561,7 +471,7 @@
     margin: 8px 0;
   }
 
-  input, select {
+  input {
     background: #09120e;
     color: var(--text-main);
     border: 1px solid var(--border-gold);
@@ -569,7 +479,7 @@
     padding: 8px 10px;
     font-size: 13px;
     flex: 1;
-    min-width: 140px;
+    min-width: 130px;
   }
 
   #toast-banner {
@@ -585,7 +495,6 @@
     padding: 10px 16px;
     font-size: 13px;
     font-weight: 700;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
     display: none;
     max-width: 92vw;
     text-align: center;
@@ -594,26 +503,52 @@
   #wheel-modal {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.78);
+    background: rgba(0, 0, 0, 0.84);
     z-index: 9000;
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 16px;
+    padding: 14px;
   }
 
-  #wheel-modal.open {
-    display: flex;
-  }
+  #wheel-modal.open { display: flex; }
 
   .modal-box {
     background: var(--bg-panel);
     border: 2px solid var(--gold);
-    border-radius: 18px;
-    padding: 18px;
+    border-radius: 20px;
+    padding: 16px;
     max-width: 380px;
     width: 100%;
     text-align: center;
+  }
+
+  .wheel-stage {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 8px auto;
+  }
+
+  .wheel-pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    width: 0;
+    height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 22px solid #ffe066;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  }
+
+  #roulette-wheel-canvas {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 6px #5c3d08, 0 0 0 9px var(--gold), 0 12px 26px rgba(0,0,0,0.75);
   }
 </style>
 </head>
@@ -639,10 +574,10 @@
   </header>
 
   <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('roulette', this)" id="tab-roulette">🎡 رولیٹ ٹیبل</button>
-    <button class="tab-btn" onclick="switchTab('wallet', this)" id="tab-wallet">🪙 پبلک والٹ</button>
-    <button class="tab-btn" onclick="switchTab('buckets', this)" id="tab-buckets">🪣 3 بکٹس (100 کروڑ)</button>
-    <button class="tab-btn" onclick="switchTab('vault', this)" id="tab-vault">👑 ماسٹر والٹ</button>
+    <button class="tab-btn active" onclick="switchTab('roulette', this)" id="tab-roulette">🎡 رولیٹ</button>
+    <button class="tab-btn" onclick="switchTab('wallet', this)" id="tab-wallet">🪙 والٹ</button>
+    <button class="tab-btn" onclick="switchTab('buckets', this)" id="tab-buckets">🪣 بکٹس</button>
+    <button class="tab-btn" onclick="switchTab('vault', this)" id="tab-vault">👑 ماسٹر</button>
   </nav>
 
   <div class="container">
@@ -682,67 +617,31 @@
 
         <div class="table-grid-shell" id="table-grid-shell">
           <div class="outside-col">
-            <div class="outside-box" data-bet="LOW" onclick="placeOutside('LOW', this)">
-              <span>1–18</span>
-              <span class="hit-count" id="bet-badge-LOW" style="display:none">0</span>
-            </div>
-            <div class="outside-box" data-bet="EVEN" onclick="placeOutside('EVEN', this)">
-              <span id="lbl-even">EVEN</span>
-              <span class="hit-count" id="bet-badge-EVEN" style="display:none">0</span>
-            </div>
-            <div class="outside-box red-box" data-bet="RED" onclick="placeOutside('RED', this)">
-              <span id="lbl-red">RED</span>
-              <span class="hit-count" id="bet-badge-RED" style="display:none">0</span>
-            </div>
-            <div class="outside-box black-box" data-bet="BLACK" onclick="placeOutside('BLACK', this)">
-              <span id="lbl-black">BLACK</span>
-              <span class="hit-count" id="bet-badge-BLACK" style="display:none">0</span>
-            </div>
-            <div class="outside-box" data-bet="ODD" onclick="placeOutside('ODD', this)">
-              <span id="lbl-odd">ODD</span>
-              <span class="hit-count" id="bet-badge-ODD" style="display:none">0</span>
-            </div>
-            <div class="outside-box" data-bet="HIGH" onclick="placeOutside('HIGH', this)">
-              <span>19–36</span>
-              <span class="hit-count" id="bet-badge-HIGH" style="display:none">0</span>
-            </div>
+            <div class="outside-box" data-bet="LOW" onclick="placeOutside('LOW')"><span>1–18</span></div>
+            <div class="outside-box" data-bet="EVEN" onclick="placeOutside('EVEN')"><span>EVEN</span></div>
+            <div class="outside-box red-box" data-bet="RED" onclick="placeOutside('RED')"><span>RED</span></div>
+            <div class="outside-box black-box" data-bet="BLACK" onclick="placeOutside('BLACK')"><span>BLACK</span></div>
+            <div class="outside-box" data-bet="ODD" onclick="placeOutside('ODD')"><span>ODD</span></div>
+            <div class="outside-box" data-bet="HIGH" onclick="placeOutside('HIGH')"><span>19–36</span></div>
           </div>
 
           <div class="dozen-col">
-            <div class="dozen-box" data-bet="DOZEN_1" id="dozen-1">
-              <div class="dozen-zone-strip top" onclick="event.stopPropagation(); placeOutside('DOZEN_1', this.parentElement)"></div>
-              <div class="dozen-zone-strip mid" onclick="event.stopPropagation(); placeOutside('DOZEN_1', this.parentElement)"></div>
-              <div class="dozen-zone-strip bot" onclick="event.stopPropagation(); placeOutside('DOZEN_1', this.parentElement)"></div>
-              <span>1st 12</span>
-              <span class="hit-count" id="bet-badge-DOZEN_1" style="display:none">0</span>
-            </div>
-            <div class="dozen-box" data-bet="DOZEN_2" id="dozen-2">
-              <div class="dozen-zone-strip top" onclick="event.stopPropagation(); placeOutside('DOZEN_2', this.parentElement)"></div>
-              <div class="dozen-zone-strip mid" onclick="event.stopPropagation(); placeOutside('DOZEN_2', this.parentElement)"></div>
-              <div class="dozen-zone-strip bot" onclick="event.stopPropagation(); placeOutside('DOZEN_2', this.parentElement)"></div>
-              <span>2nd 12</span>
-              <span class="hit-count" id="bet-badge-DOZEN_2" style="display:none">0</span>
-            </div>
-            <div class="dozen-box" data-bet="DOZEN_3" id="dozen-3">
-              <div class="dozen-zone-strip top" onclick="event.stopPropagation(); placeOutside('DOZEN_3', this.parentElement)"></div>
-              <div class="dozen-zone-strip mid" onclick="event.stopPropagation(); placeOutside('DOZEN_3', this.parentElement)"></div>
-              <div class="dozen-zone-strip bot" onclick="event.stopPropagation(); placeOutside('DOZEN_3', this.parentElement)"></div>
-              <span>3rd 12</span>
-              <span class="hit-count" id="bet-badge-DOZEN_3" style="display:none">0</span>
-            </div>
+            <div class="dozen-box" data-bet="DOZEN_1" onclick="placeOutside('DOZEN_1')"><span>1st 12</span></div>
+            <div class="dozen-box" data-bet="DOZEN_2" onclick="placeOutside('DOZEN_2')"><span>2nd 12</span></div>
+            <div class="dozen-box" data-bet="DOZEN_3" onclick="placeOutside('DOZEN_3')"><span>3rd 12</span></div>
           </div>
 
           <div class="numbers-area">
-            <div class="zero-cell" id="cell-0" data-bet="NUM_0" onclick="placeNumber(0, this)">
+            <div class="zero-cell" id="cell-0" data-bet="NUM_0" onclick="placeNumber(0)">
               <span>0</span>
-              <span class="hit-count" id="freq-0">0</span>
+              <span class="hit-count">0</span>
             </div>
             <div class="nums-3x12" id="nums-3x12"></div>
           </div>
         </div>
 
         <div class="trash-dropzone" id="trash-dropzone">
-          🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں (Drag Coin Here to Remove)
+          🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں
         </div>
 
         <div class="action-row">
@@ -756,120 +655,113 @@
 
     <section id="panel-wallet" class="panel">
       <div class="card">
-        <h3 class="card-title" id="w-title-identity">والٹ شناخت، کیو آر کوڈ اور ڈیجیٹل دستخط</h3>
-        <div class="stat-label" id="w-lbl-addr">Public Wallet Address</div>
+        <h3 class="card-title" id="w-title-identity">والٹ شناخت، QR کوڈ اور دستخط</h3>
+        <div class="stat-label" id="w-lbl-addr">پبلک والٹ ایڈریس</div>
         <div class="mono-box" id="w-pub-addr"></div>
 
-        <div class="stat-label" id="w-lbl-pubkey">Public Key (Verification)</div>
+        <div class="stat-label" id="w-lbl-pubkey">پبلک کی</div>
         <div class="mono-box" id="w-pub-key"></div>
 
-        <div class="stat-label" id="w-lbl-privkey">Private Key (خفیہ — کسی کو نہ دکھائیں)</div>
+        <div class="stat-label" id="w-lbl-privkey">پرائیویٹ کی (خفیہ)</div>
         <div class="mono-box" id="w-priv-key">••••••••••••••••••••••••••••••••</div>
         <div class="input-row">
-          <button class="btn" id="btn-toggle-priv" onclick="togglePrivKey()">👁️ Show / Hide Private Key</button>
-          <button class="btn" id="btn-copy-addr" onclick="copyText(state.wallet.address)">📋 Copy Address</button>
-          <button class="btn" id="btn-new-keys" onclick="newWalletKeys()">🔄 New Keypair</button>
+          <button class="btn" id="btn-toggle-priv" onclick="togglePrivKey()">👁️ دکھائیں / چھپائیں</button>
+          <button class="btn" id="btn-copy-addr" onclick="copyText(state.wallet.address)">📋 کاپی</button>
+          <button class="btn" id="btn-new-keys" onclick="newWalletKeys()">🔄 نئی کیز</button>
         </div>
 
         <div style="margin-top:12px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-          <canvas id="qr-canvas" width="132" height="132" style="background:#fff; padding:6px; border-radius:10px;"></canvas>
+          <canvas id="qr-canvas" width="120" height="120" style="background:#fff; padding:6px; border-radius:10px;"></canvas>
           <div>
-            <div style="font-weight:800; color:var(--gold); margin-bottom:4px;" id="w-qr-title">Wallet QR Code</div>
-            <div style="font-size:12px; color:var(--text-muted); max-width:260px;" id="w-qr-desc">
-              یہ QR کوڈ آپ کے پبلک والٹ ایڈریس کی نمائندگی کرتا ہے تاکہ دوسرے صارفین آسانی سے AZM بھیج سکیں۔
+            <div style="font-weight:800; color:var(--gold); margin-bottom:4px;" id="w-qr-title">والٹ QR کوڈ</div>
+            <div style="font-size:12px; color:var(--text-muted); max-width:250px;" id="w-qr-desc">
+              دوسرے صارفین کو AZM بھیجنے کے لیے QR کوڈ۔
             </div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h3 class="card-title" id="w-send-title">✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں (Signed Transfer)</h3>
+        <h3 class="card-title" id="w-send-title">✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں</h3>
         <div class="input-row">
-          <input type="text" id="send-to" placeholder="Receiver Public Address (e.g. AZM-PUB-...)" />
-          <input type="number" step="0.00000001" id="send-amt" placeholder="Amount AZM" />
+          <input type="text" id="send-to" placeholder="وصول کنندہ ایڈریس (AZM-PUB-...)" />
+          <input type="number" step="0.00000001" id="send-amt" placeholder="رقم (AZM)" />
         </div>
-        <button class="btn btn-gold" id="btn-sign-send" onclick="sendSignedAzm()">Sign &amp; Send AZM</button>
+        <button class="btn btn-gold" id="btn-sign-send" onclick="sendSignedAzm()">دستخط اور بھیجیں</button>
         <div id="last-sig-box" class="mono-box" style="display:none"></div>
       </div>
 
       <div class="card">
-        <h3 class="card-title" id="w-bt-title">📶 آف لائن / بلوٹوتھ ٹرانسفر پیکٹ (Offline Bluetooth Packet)</h3>
-        <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;" id="w-bt-desc">
-          انٹرنیٹ کے بغیر دوسرے موبائل کو بلوٹوتھ یا QR/ٹیکسٹ کے ذریعے بھیجنے کے لیے سائن شدہ پیکٹ تیار کریں۔
-        </div>
+        <h3 class="card-title" id="w-bt-title">📶 آف لائن / بلوٹوتھ ٹرانسفر پیکٹ</h3>
         <div class="input-row">
-          <button class="btn" id="btn-gen-bt" onclick="generateOfflinePacket()">📶 Generate Offline Packet</button>
-          <button class="btn" id="btn-apply-bt" onclick="applyOfflinePacket()">📥 Receive / Apply Packet</button>
+          <button class="btn" id="btn-gen-bt" onclick="generateOfflinePacket()">📶 پیکٹ بنائیں</button>
+          <button class="btn" id="btn-apply-bt" onclick="applyOfflinePacket()">📥 پیکٹ لاگو کریں</button>
         </div>
-        <input type="text" id="bt-packet-input" placeholder="Paste Offline AZM Packet here to apply..." />
+        <input type="text" id="bt-packet-input" placeholder="آف لائن AZM پیکٹ پیسٹ کریں..." />
         <div id="bt-packet-out" class="mono-box" style="display:none"></div>
       </div>
 
       <div class="card">
-        <h3 class="card-title" id="w-rew-title">🎁 ریوارڈز اور ویلکم بونس (5 کروڑ ریوارڈ بکٹ سے)</h3>
+        <h3 class="card-title" id="w-rew-title">🎁 ریوارڈز اور ویلکم بونس</h3>
         <div class="input-row">
-          <button class="btn btn-gold" id="btn-welcome" onclick="claimWelcome()">🎉 Welcome Bonus (+50 AZM)</button>
-          <button class="btn" id="btn-ad" onclick="claimAdReward()">📺 Watch Ad (+5 AZM)</button>
-          <button class="btn" id="btn-daily" onclick="claimDailyReward()">📅 Daily 24h (+1 AZM)</button>
-          <button class="btn" id="btn-ref" onclick="claimRefReward()">🤝 Refer (+10 AZM)</button>
+          <button class="btn btn-gold" id="btn-welcome" onclick="claimWelcome()">🎉 ویلکم (+50)</button>
+          <button class="btn" id="btn-ad" onclick="claimAdReward()">📺 اشتہار (+5)</button>
+          <button class="btn" id="btn-daily" onclick="claimDailyReward()">📅 ڈیلی (+1)</button>
+          <button class="btn" id="btn-ref" onclick="claimRefReward()">🤝 ریفر (+10)</button>
         </div>
       </div>
     </section>
 
     <section id="panel-buckets" class="panel">
       <div class="card">
-        <h3 class="card-title" id="b-main-title">🪣 100 کروڑ AZM — تین الگ بکٹس (غیر متبدل کل سپلائی)</h3>
+        <h3 class="card-title" id="b-main-title">🪣 100 کروڑ AZM — بکٹس اور سپلائی</h3>
         <div class="mono-box" id="supply-check-box"></div>
         <div class="buckets-grid">
           <div class="bucket-card">
-            <div class="stat-label" id="b-lbl-welcome">1. ویلکم بونس ریزرو (Welcome Reserve)</div>
+            <div class="stat-label" id="b-lbl-welcome">1. ویلکم ریزرو</div>
             <div class="stat-val" id="b-welcome">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-welcome">ابتدائی 1 کروڑ صارفین کے 50 AZM بونس کے لیے۔</div>
           </div>
           <div class="bucket-card">
-            <div class="stat-label" id="b-lbl-roulette">2. رولیٹ ریزرو و آٹو ری فل (Roulette Reserve)</div>
+            <div class="stat-label" id="b-lbl-roulette">2. رولیٹ ریزرو</div>
             <div class="stat-val" id="b-roulette">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-roulette">رولیٹ ہاؤس پول کم ہونے پر خودکار ٹاپ اپ کے لیے۔</div>
           </div>
           <div class="bucket-card">
-            <div class="stat-label" id="b-lbl-reward">3. ریوارڈ و فیس بکٹ (Reward &amp; Tx Bucket)</div>
+            <div class="stat-label" id="b-lbl-reward">3. ریوارڈ و فیس بکٹ</div>
             <div class="stat-val" id="b-reward">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-reward">Ad / Daily / Refer ریوارڈز اور Tx فیس کے لیے۔</div>
           </div>
           <div class="bucket-card">
-            <div class="stat-label" id="b-lbl-house">فعال رولیٹ ہاؤس پول (Active House Pool)</div>
+            <div class="stat-label" id="b-lbl-house">ہاؤس پول</div>
             <div class="stat-val" id="b-house">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-house">جیت کی ادائیگی اور ہارے داؤ کی واپسی کا پول۔</div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h3 class="card-title" id="b-ledger-title">⛓️ SHA-256 لیجر (حالیہ بلاکس)</h3>
+        <h3 class="card-title" id="b-ledger-title">⛓️ SHA-256 لیجر</h3>
         <div id="ledger-list"></div>
       </div>
     </section>
 
     <section id="panel-vault" class="panel">
       <div class="card">
-        <h3 class="card-title" id="v-main-title">👑 ماسٹر والٹ کنٹرول (AZM-MASTER-2026)</h3>
+        <h3 class="card-title" id="v-main-title">👑 ماسٹر والٹ کنٹرول</h3>
         <div class="input-row">
-          <input type="password" id="vault-pin" placeholder="Enter Master Code (AZM-MASTER-2026)" />
-          <button class="btn btn-gold" id="btn-unlock-vault" onclick="unlockVault()">Unlock Vault</button>
+          <input type="password" id="vault-pin" placeholder="AZM-MASTER-2026" />
+          <button class="btn btn-gold" id="btn-unlock-vault" onclick="unlockVault()">کھولیں</button>
         </div>
         <div id="vault-controls" style="display:none; margin-top:12px;">
-          <div class="stat-label" id="v-lbl-maxbet">میکس بیٹ لمٹ تبدیل کریں (Current: 5,000 AZM)</div>
+          <div class="stat-label" id="v-lbl-maxbet">میکس بیٹ لمٹ (AZM)</div>
           <div class="input-row">
             <input type="number" id="max-bet-input" value="5000" min="1" />
-            <button class="btn btn-gold" id="btn-upd-maxbet" onclick="updateMaxBet()">Update Max Bet</button>
+            <button class="btn btn-gold" id="btn-upd-maxbet" onclick="updateMaxBet()">اپ ڈیٹ</button>
           </div>
-          <div class="stat-label" id="v-lbl-refill">رولیٹ آٹو ری فل کم از کم حد (Auto-Refill Threshold)</div>
+          <div class="stat-label" id="v-lbl-refill">آٹو ری فل حد (AZM)</div>
           <div class="input-row">
             <input type="number" id="refill-thresh-input" value="1000000" min="100" />
-            <button class="btn" id="btn-upd-refill" onclick="updateRefillThresh()">Update Threshold</button>
+            <button class="btn" id="btn-upd-refill" onclick="updateRefillThresh()">اپ ڈیٹ</button>
           </div>
           <div class="input-row">
-            <button class="btn btn-danger" id="btn-reset-demo" onclick="resetDemoState()">Reset Local Wallet State</button>
+            <button class="btn btn-danger" id="btn-reset-demo" onclick="resetDemoState()">والٹ ری سیٹ</button>
           </div>
         </div>
       </div>
@@ -882,10 +774,13 @@
 
 <div id="wheel-modal">
   <div class="modal-box">
-    <h3 style="margin:0 0 10px; color:var(--gold)" id="m-wheel-title">🎡 Spinning Wheel</h3>
-    <div id="wheel-result-anim" style="font-size:38px; font-weight:900; padding:24px; border-radius:50%; width:120px; height:120px; margin:10px auto; display:flex; align-items:center; justify-content:center; border:4px solid var(--gold); background:#132a20;">?</div>
-    <div id="wheel-outcome-text" style="font-size:14px; margin:12px 0; font-weight:700;"></div>
-    <button class="btn btn-gold" id="btn-modal-ok" onclick="closeWheelModal()">OK</button>
+    <h3 style="margin:0 0 6px; color:var(--gold)" id="m-wheel-title">🎡 یورپین رولیٹ وہیل</h3>
+    <div class="wheel-stage">
+      <div class="wheel-pointer"></div>
+      <canvas id="roulette-wheel-canvas" width="260" height="260"></canvas>
+    </div>
+    <div id="wheel-outcome-text" style="font-size:13.5px; margin:10px 0; font-weight:800;"></div>
+    <button class="btn btn-gold" id="btn-modal-ok" onclick="closeWheelModal()">ٹھیک ہے</button>
   </div>
 </div>
 
@@ -893,186 +788,172 @@
 const TOTAL_SUPPLY_UNITS = 100000000000000000n;
 const DECIMALS = 100000000n;
 const RED_NUMS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 
 const I18N = {
   ur: {
     appTitle: "عزم (AZM) & یورپین رولیٹ",
-    tabRoulette: "🎡 رولیٹ ٹیبل",
-    tabWallet: "🪙 پبلک والٹ",
-    tabBuckets: "🪣 3 بکٹس (100 کروڑ)",
-    tabVault: "👑 ماسٹر والٹ",
+    tabRoulette: "🎡 رولیٹ",
+    tabWallet: "🪙 والٹ",
+    tabBuckets: "🪣 بکٹس",
+    tabVault: "👑 ماسٹر",
     lblBalance: "والٹ بیلنس (AZM)",
     lblCurrentBet: "موجودہ داؤ (فی اسپن)",
     lblMaxBet: "میکس بیٹ لمٹ",
     lblLastWin: "آخری نتیجہ",
     lblCoinTray: "تمام کوائنز (دائیں/بائیں اسکرول کریں)",
-    trashText: "🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں (Drag Coin Here to Remove)",
-    btnClear: "صاف کریں",
+    trashText: "🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں",
+    btnClear: "صاف",
     btnUndo: "واپس",
     btnDouble: "2x",
-    btnSpin: "اسپن (SPIN)",
-    wTitleIdentity: "والٹ شناخت، کیو آر کوڈ اور ڈیجیٹل دستخط",
-    wLblAddr: "پبلک والٹ ایڈریس (Public Address)",
-    wLblPubKey: "پبلک کی (Public Key)",
-    wLblPrivKey: "پرائیویٹ کی (خفیہ — کسی کو نہ دکھائیں)",
-    btnTogglePriv: "👁️ پرائیویٹ کی دکھائیں / چھپائیں",
-    btnCopyAddr: "📋 ایڈریس کاپی کریں",
-    btnNewKeys: "🔄 نئی کیز بنائیں",
-    wQrTitle: "والٹ کیو آر کوڈ (Wallet QR)",
-    wQrDesc: "یہ QR کوڈ آپ کے پبلک والٹ ایڈریس کی نمائندگی کرتا ہے تاکہ دوسرے صارفین آسانی سے AZM بھیج سکیں۔",
+    btnSpin: "SPIN",
+    wTitleIdentity: "والٹ شناخت، QR کوڈ اور دستخط",
+    wLblAddr: "پبلک والٹ ایڈریس",
+    wLblPubKey: "پبلک کی",
+    wLblPrivKey: "پرائیویٹ کی (خفیہ)",
+    btnTogglePriv: "👁️ دکھائیں / چھپائیں",
+    btnCopyAddr: "📋 کاپی",
+    btnNewKeys: "🔄 نئی کیز",
+    wQrTitle: "والٹ QR کوڈ",
+    wQrDesc: "دوسرے صارفین کو AZM بھیجنے کے لیے QR کوڈ۔",
     wSendTitle: "✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں",
-    sendToPh: "وصول کنندہ کا پبلک ایڈریس (e.g. AZM-PUB-...)",
+    sendToPh: "وصول کنندہ ایڈریس (AZM-PUB-...)",
     sendAmtPh: "رقم (AZM)",
-    btnSignSend: "دستخط اور ارسال کریں",
+    btnSignSend: "دستخط اور بھیجیں",
     wBtTitle: "📶 آف لائن / بلوٹوتھ ٹرانسفر پیکٹ",
-    wBtDesc: "بغیر انٹرنیٹ دوسرے فون کو بھیجنے یا موصول کرنے کے لیے سائن شدہ AZM پیکٹ استعمال کریں۔",
-    btnGenBt: "📶 آف لائن پیکٹ بنائیں",
+    btnGenBt: "📶 پیکٹ بنائیں",
     btnApplyBt: "📥 پیکٹ لاگو کریں",
-    btPh: "آف لائن AZM پیکٹ یہاں پیسٹ کریں...",
+    btPh: "آف لائن AZM پیکٹ پیسٹ کریں...",
     wRewTitle: "🎁 ریوارڈز اور ویلکم بونس",
-    btnWelcome: "🎉 ویلکم بونس (+50 AZM)",
-    btnAd: "📺 اشتہار دیکھیں (+5 AZM)",
-    btnDaily: "📅 ڈیلی 24گھنٹے (+1 AZM)",
-    btnRef: "🤝 ریفر بونس (+10 AZM)",
-    bMainTitle: "🪣 100 کروڑ AZM — بکٹس اور غیر متبدل سپلائی",
-    bLblWelcome: "1. ویلکم بونس ریزرو",
-    bDescWelcome: "ابتدائی صارفین کے 50 AZM ویلکم بونس کے لیے۔",
-    bLblRoulette: "2. رولیٹ ریزرو و آٹو ری فل",
-    bDescRoulette: "رولیٹ ہاؤس پول کم ہونے پر خودکار ٹاپ اپ کے لیے۔",
+    btnWelcome: "🎉 ویلکم (+50)",
+    btnAd: "📺 اشتہار (+5)",
+    btnDaily: "📅 ڈیلی (+1)",
+    btnRef: "🤝 ریفر (+10)",
+    bMainTitle: "🪣 100 کروڑ AZM — بکٹس اور سپلائی",
+    bLblWelcome: "1. ویلکم ریزرو",
+    bLblRoulette: "2. رولیٹ ریزرو",
     bLblReward: "3. ریوارڈ و فیس بکٹ",
-    bDescReward: "Ad / Daily / Refer ریوارڈز اور ٹرانزیکشنز کے لیے۔",
-    bLblHouse: "فعال رولیٹ ہاؤس پول",
-    bDescHouse: "جیت کی ادائیگی اور ہارے داؤ کی واپسی کا پول۔",
-    bLedgerTitle: "⛓️ SHA-256 لیجر (حالیہ بلاکس)",
-    vMainTitle: "👑 ماسٹر والٹ کنٹرول (AZM-MASTER-2026)",
-    vaultPinPh: "ماسٹر کوڈ درج کریں (AZM-MASTER-2026)",
-    btnUnlockVault: "والٹ کھولیں",
-    vLblMaxBet: "میکس بیٹ لمٹ تبدیل کریں (AZM)",
-    btnUpdMaxBet: "بیٹ لمٹ اپ ڈیٹ کریں",
-    vLblRefill: "رولیٹ آٹو ری فل حد (AZM)",
-    btnUpdRefill: "حد اپ ڈیٹ کریں",
-    btnResetDemo: "مقامی والٹ ری سیٹ کریں",
-    wheelTitle: "🎡 وہیل گھوم رہا ہے",
+    bLblHouse: "ہاؤس پول",
+    bLedgerTitle: "⛓️ SHA-256 لیجر",
+    vMainTitle: "👑 ماسٹر والٹ کنٹرول",
+    vaultPinPh: "AZM-MASTER-2026",
+    btnUnlockVault: "کھولیں",
+    vLblMaxBet: "میکس بیٹ لمٹ (AZM)",
+    btnUpdMaxBet: "اپ ڈیٹ",
+    vLblRefill: "آٹو ری فل حد (AZM)",
+    btnUpdRefill: "اپ ڈیٹ",
+    btnResetDemo: "والٹ ری سیٹ",
+    wheelTitle: "🎡 یورپین رولیٹ وہیل",
     modalOk: "ٹھیک ہے"
   },
   hi: {
     appTitle: "अज़म (AZM) और यूरोपियन रूलेट",
-    tabRoulette: "🎡 रूलेट टेबल",
-    tabWallet: "🪙 पब्लिक वॉलेट",
-    tabBuckets: "🪣 3 बकेट्स (100 करोड़)",
-    tabVault: "👑 मास्टर वॉलेट",
+    tabRoulette: "🎡 रूलेट",
+    tabWallet: "🪙 वॉलेट",
+    tabBuckets: "🪣 बकेट्स",
+    tabVault: "👑 मास्टर",
     lblBalance: "वॉलेट बैलेंस (AZM)",
     lblCurrentBet: "मौजूदा दांव (प्रति स्पिन)",
     lblMaxBet: "मैक्स बेट लिमिट",
     lblLastWin: "आखिरी नतीजा",
     lblCoinTray: "सभी कॉइन्स (दाएं/बाएं स्क्रॉल करें)",
-    trashText: "🗑️ कॉइन हटाने के लिए यहां खींचकर छोड़ें (Drag Coin Here to Remove)",
-    btnClear: "साफ़ करें",
+    trashText: "🗑️ कॉइन हटाने के लिए यहां खींचकर छोड़ें",
+    btnClear: "साफ़",
     btnUndo: "वापस",
     btnDouble: "2x",
-    btnSpin: "स्पिन (SPIN)",
-    wTitleIdentity: "वॉलेट पहचान, QR कोड और डिजिटल हस्ताक्षर",
-    wLblAddr: "पब्लिक वॉलेट एड्रेस (Public Address)",
-    wLblPubKey: "पब्लिक की (Public Key)",
-    wLblPrivKey: "प्राइवेट की (गुप्त — किसी को न दिखाएं)",
-    btnTogglePriv: "👁️ प्राइवेट की दिखाएं / छुपाएं",
-    btnCopyAddr: "📋 एड्रेस कॉपी करें",
-    btnNewKeys: "🔄 नई कीज़ बनाएं",
+    btnSpin: "SPIN",
+    wTitleIdentity: "वॉलेट पहचान, QR कोड और सिग्नेचर",
+    wLblAddr: "पब्लिक वॉलेट एड्रेस",
+    wLblPubKey: "पब्लिक की",
+    wLblPrivKey: "प्राइवेट की (गुप्त)",
+    btnTogglePriv: "👁️ दिखाएं / छुपाएं",
+    btnCopyAddr: "📋 कॉपी",
+    btnNewKeys: "🔄 नई कीज़",
     wQrTitle: "वॉलेट QR कोड",
-    wQrDesc: "यह QR कोड आपके पब्लिक वॉलेट एड्रेस को दिखाता है ताकि दूसरे यूज़र आसानी से AZM भेज सकें।",
+    wQrDesc: "AZM भेजने के लिए पब्लिक वॉलेट QR कोड।",
     wSendTitle: "✍️ डिजिटल सिग्नेचर के साथ AZM भेजें",
-    sendToPh: "रिसीवर का पब्लिक एड्रेस (e.g. AZM-PUB-...)",
+    sendToPh: "रिसीवर एड्रेस (AZM-PUB-...)",
     sendAmtPh: "रकम (AZM)",
     btnSignSend: "साइन और भेजें",
     wBtTitle: "📶 ऑफ़लाइन / ब्लूटूथ ट्रांसफ़र पैकेट",
-    wBtDesc: "बिना इंटरनेट दूसरे फ़ोन को भेजने या लेने के लिए साइन किया हुआ AZM पैकेट इस्तेमाल करें।",
-    btnGenBt: "📶 ऑफ़लाइन पैकेट बनाएं",
+    btnGenBt: "📶 पैकेट बनाएं",
     btnApplyBt: "📥 पैकेट लागू करें",
-    btPh: "ऑफ़लाइन AZM पैकेट यहां पेस्ट करें...",
+    btPh: "ऑफ़लाइन AZM पैकेट पेस्ट करें...",
     wRewTitle: "🎁 रिवॉर्ड्स और वेलकम बोनस",
-    btnWelcome: "🎉 वेलकम बोनस (+50 AZM)",
-    btnAd: "📺 विज्ञापन देखें (+5 AZM)",
-    btnDaily: "📅 डेली 24 घंटे (+1 AZM)",
-    btnRef: "🤝 रेफ़र बोनस (+10 AZM)",
-    bMainTitle: "🪣 100 करोड़ AZM — बकेट्स और निश्चित सप्लाई",
-    bLblWelcome: "1. वेलकम बोनस रिज़र्व",
-    bDescWelcome: "शुरुआती यूज़र्स के 50 AZM वेलकम बोनस के लिए।",
-    bLblRoulette: "2. रूलेट रिज़र्व व ऑटो रिफ़िल",
-    bDescRoulette: "रूलेट हाउस पूल कम होने पर अपने आप टॉप-अप के लिए।",
+    btnWelcome: "🎉 वेलकम (+50)",
+    btnAd: "📺 विज्ञापन (+5)",
+    btnDaily: "📅 डेली (+1)",
+    btnRef: "🤝 रेफ़र (+10)",
+    bMainTitle: "🪣 100 करोड़ AZM — बकेट्स और सप्लाई",
+    bLblWelcome: "1. वेलकम रिज़र्व",
+    bLblRoulette: "2. रूलेट रिज़र्व",
     bLblReward: "3. रिवॉर्ड व फ़ीस बकेट",
-    bDescReward: "Ad / Daily / Refer रिवॉर्ड्स और ट्रांज़ैक्शन्स के लिए।",
-    bLblHouse: "सक्रिय रूलेट हाउस पूल",
-    bDescHouse: "जीत के भुगतान और दांव के सेटलमेंट का पूल।",
-    bLedgerTitle: "⛓️ SHA-256 लेजर (हालिया ब्लॉक्स)",
-    vMainTitle: "👑 मास्टर वॉलेट कंट्रोल (AZM-MASTER-2026)",
-    vaultPinPh: "मास्टर कोड दर्ज करें (AZM-MASTER-2026)",
-    btnUnlockVault: "वॉलेट खोलें",
-    vLblMaxBet: "मैक्स बेट लिमिट बदलें (AZM)",
-    btnUpdMaxBet: "बेट लिमिट अपडेट करें",
-    vLblRefill: "रूलेट ऑटो रिफ़िल सीमा (AZM)",
-    btnUpdRefill: "सीमा अपडेट करें",
-    btnResetDemo: "लोकल वॉलेट रीसेट करें",
-    wheelTitle: "🎡 व्हील घूम रहा है",
+    bLblHouse: "हाउस पूल",
+    bLedgerTitle: "⛓️ SHA-256 लेजर",
+    vMainTitle: "👑 मास्टर वॉलेट कंट्रोल",
+    vaultPinPh: "AZM-MASTER-2026",
+    btnUnlockVault: "खोलें",
+    vLblMaxBet: "मैक्स बेट लिमिट (AZM)",
+    btnUpdMaxBet: "अपडेट",
+    vLblRefill: "ऑटो रिफ़िल सीमा (AZM)",
+    btnUpdRefill: "अपडेट",
+    btnResetDemo: "वॉलेट रीसेट",
+    wheelTitle: "🎡 यूरोपियन रूलेट व्हील",
     modalOk: "ठीक है"
   },
   en: {
     appTitle: "AZM & European Roulette",
-    tabRoulette: "🎡 Roulette Table",
-    tabWallet: "🪙 Public Wallet",
-    tabBuckets: "🪣 3 Buckets (1B AZM)",
-    tabVault: "👑 Master Vault",
+    tabRoulette: "🎡 Roulette",
+    tabWallet: "🪙 Wallet",
+    tabBuckets: "🪣 Buckets",
+    tabVault: "👑 Master",
     lblBalance: "Wallet Balance (AZM)",
     lblCurrentBet: "Current Bet (Per Spin)",
     lblMaxBet: "Max Bet Limit",
     lblLastWin: "Last Result",
     lblCoinTray: "All Coins (Scroll Left / Right)",
-    trashText: "🗑️ Drag Coin Here to Remove / Refund",
+    trashText: "🗑️ Drag Coin Here to Remove",
     btnClear: "Clear",
     btnUndo: "Undo",
     btnDouble: "2x",
     btnSpin: "SPIN",
-    wTitleIdentity: "Wallet Identity, QR Code & Digital Signature",
+    wTitleIdentity: "Wallet Identity, QR & Signature",
     wLblAddr: "Public Wallet Address",
-    wLblPubKey: "Public Key (Verification)",
-    wLblPrivKey: "Private Key (Secret — Never Share)",
-    btnTogglePriv: "👁️ Show / Hide Private Key",
-    btnCopyAddr: "📋 Copy Address",
-    btnNewKeys: "🔄 New Keypair",
+    wLblPubKey: "Public Key",
+    wLblPrivKey: "Private Key (Secret)",
+    btnTogglePriv: "👁️ Show / Hide",
+    btnCopyAddr: "📋 Copy",
+    btnNewKeys: "🔄 New Keys",
     wQrTitle: "Wallet QR Code",
-    wQrDesc: "This QR code represents your public wallet address so others can send AZM easily.",
+    wQrDesc: "QR code for your public AZM wallet address.",
     wSendTitle: "✍️ Send AZM with Digital Signature",
-    sendToPh: "Receiver Public Address (e.g. AZM-PUB-...)",
+    sendToPh: "Receiver Address (AZM-PUB-...)",
     sendAmtPh: "Amount (AZM)",
-    btnSignSend: "Sign & Send AZM",
+    btnSignSend: "Sign & Send",
     wBtTitle: "📶 Offline / Bluetooth Transfer Packet",
-    wBtDesc: "Generate or apply a signed AZM packet for offline or Bluetooth peer transfer.",
-    btnGenBt: "📶 Generate Offline Packet",
+    btnGenBt: "📶 Generate Packet",
     btnApplyBt: "📥 Apply Packet",
-    btPh: "Paste Offline AZM Packet here...",
+    btPh: "Paste Offline AZM Packet...",
     wRewTitle: "🎁 Rewards & Welcome Bonus",
-    btnWelcome: "🎉 Welcome Bonus (+50 AZM)",
-    btnAd: "📺 Watch Ad (+5 AZM)",
-    btnDaily: "📅 Daily 24h (+1 AZM)",
-    btnRef: "🤝 Refer Bonus (+10 AZM)",
-    bMainTitle: "🪣 1B AZM — Buckets & Fixed Supply",
-    bLblWelcome: "1. Welcome Bonus Reserve",
-    bDescWelcome: "Reserved for initial 50 AZM welcome bonuses.",
-    bLblRoulette: "2. Roulette Reserve & Auto-Refill",
-    bDescRoulette: "Automatic top-up when roulette house pool runs low.",
+    btnWelcome: "🎉 Welcome (+50)",
+    btnAd: "📺 Ad (+5)",
+    btnDaily: "📅 Daily (+1)",
+    btnRef: "🤝 Refer (+10)",
+    bMainTitle: "🪣 1B AZM — Buckets & Supply",
+    bLblWelcome: "1. Welcome Reserve",
+    bLblRoulette: "2. Roulette Reserve",
     bLblReward: "3. Reward & Tx Bucket",
-    bDescReward: "For Ad / Daily / Refer rewards and transactions.",
-    bLblHouse: "Active Roulette House Pool",
-    bDescHouse: "Pool for spin payouts and round settlements.",
-    bLedgerTitle: "⛓️ SHA-256 Ledger (Recent Blocks)",
-    vMainTitle: "👑 Master Vault Control (AZM-MASTER-2026)",
-    vaultPinPh: "Enter Master Code (AZM-MASTER-2026)",
-    btnUnlockVault: "Unlock Vault",
-    vLblMaxBet: "Update Max Bet Limit (AZM)",
-    btnUpdMaxBet: "Update Max Bet",
-    vLblRefill: "Roulette Auto-Refill Threshold (AZM)",
-    btnUpdRefill: "Update Threshold",
-    btnResetDemo: "Reset Local Wallet State",
-    wheelTitle: "🎡 Spinning Wheel",
+    bLblHouse: "House Pool",
+    bLedgerTitle: "⛓️ SHA-256 Ledger",
+    vMainTitle: "👑 Master Vault Control",
+    vaultPinPh: "AZM-MASTER-2026",
+    btnUnlockVault: "Unlock",
+    vLblMaxBet: "Max Bet Limit (AZM)",
+    btnUpdMaxBet: "Update",
+    vLblRefill: "Auto-Refill Threshold (AZM)",
+    btnUpdRefill: "Update",
+    btnResetDemo: "Reset Wallet",
+    wheelTitle: "🎡 European Roulette Wheel",
     modalOk: "OK"
   }
 };
@@ -1096,30 +977,26 @@ const COIN_DENOMS = [
 ];
 
 function fmtAzm(unitsBig) {
-  const neg = unitsBig < 0n;
-  const abs = neg ? -unitsBig : unitsBig;
+  const b = BigInt(unitsBig || 0n);
+  const neg = b < 0n;
+  const abs = neg ? -b : b;
   const whole = abs / DECIMALS;
   const frac = (abs % DECIMALS).toString().padStart(8, "0");
   return (neg ? "-" : "") + whole.toLocaleString("en-US") + "." + frac + " AZM";
 }
 
 function fmtShortChip(unitsBig) {
-  const whole = unitsBig / DECIMALS;
-  const frac = unitsBig % DECIMALS;
+  const b = BigInt(unitsBig || 0n);
+  const whole = b / DECIMALS;
+  const frac = b % DECIMALS;
   if (frac === 0n) return whole.toString();
-  return (Number(unitsBig) / 1e8).toString();
+  return (Number(b) / 1e8).toString();
 }
 
 function randomHex(bytesLen) {
-  try {
-    const arr = new Uint8Array(bytesLen);
-    crypto.getRandomValues(arr);
-    return Array.from(arr, b => b.toString(16).padStart(2, "0")).join("");
-  } catch {
-    let out = "";
-    for (let i = 0; i < bytesLen * 2; i++) out += Math.floor(Math.random() * 16).toString(16);
-    return out;
-  }
+  const arr = new Uint8Array(bytesLen);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(16).padStart(2, "0")).join("");
 }
 
 function createKeypair() {
@@ -1131,12 +1008,6 @@ function createKeypair() {
 
 function defaultState() {
   const kp = createKeypair();
-  const welcomeUnits = 50000000000000000n;
-  const rouletteUnits = 45000000000000000n;
-  const rewardUnits = 5000000000000000n;
-  const houseUnits = 0n;
-  const playerUnits = 0n;
-
   return {
     lang: "ur",
     zoom: 1,
@@ -1154,13 +1025,13 @@ function defaultState() {
       address: kp.addr,
       publicKey: kp.pubKey,
       privateKey: kp.priv,
-      balanceUnits: playerUnits.toString()
+      balanceUnits: "0"
     },
     buckets: {
-      welcomeUnits: welcomeUnits.toString(),
-      rouletteReserveUnits: rouletteUnits.toString(),
-      rewardUnits: rewardUnits.toString(),
-      housePoolUnits: houseUnits.toString()
+      welcomeUnits: "50000000000000000",
+      rouletteReserveUnits: "45000000000000000",
+      rewardUnits: "5000000000000000",
+      housePoolUnits: "0"
     },
     bets: {},
     betHistory: [],
@@ -1170,7 +1041,7 @@ function defaultState() {
     lastHit: null,
     freq: Array(37).fill(0),
     chain: [
-      { index: 0, type: "GENESIS", note: "1,000,000,000.00000000 AZM Fixed Supply Locked", hash: randomHex(32) }
+      { index: 0, type: "GENESIS", note: "1,000,000,000.00000000 AZM Fixed Supply", hash: randomHex(32) }
     ]
   };
 }
@@ -1180,19 +1051,19 @@ let state = loadState();
 function loadState() {
   const base = defaultState();
   try {
-    const raw = localStorage.getItem("azm_roulette_state_v1");
+    const raw = localStorage.getItem("azm_roulette_state_v3");
     if (!raw) return base;
-    const parsed = JSON.parse(raw);
+    const p = JSON.parse(raw);
     return {
       ...base,
-      ...parsed,
-      wallet: { ...base.wallet, ...(parsed.wallet || {}) },
-      buckets: { ...base.buckets, ...(parsed.buckets || {}) },
-      bets: parsed.bets || {},
-      betHistory: Array.isArray(parsed.betHistory) ? parsed.betHistory : [],
-      roundUniqueSet: Array.isArray(parsed.roundUniqueSet) ? parsed.roundUniqueSet : [],
-      freq: Array.isArray(parsed.freq) && parsed.freq.length === 37 ? parsed.freq : Array(37).fill(0),
-      chain: Array.isArray(parsed.chain) && parsed.chain.length ? parsed.chain : base.chain
+      ...p,
+      wallet: { ...base.wallet, ...(p.wallet || {}) },
+      buckets: { ...base.buckets, ...(p.buckets || {}) },
+      bets: p.bets || {},
+      betHistory: Array.isArray(p.betHistory) ? p.betHistory : [],
+      roundUniqueSet: Array.isArray(p.roundUniqueSet) ? p.roundUniqueSet : [],
+      freq: Array.isArray(p.freq) && p.freq.length === 37 ? p.freq : Array(37).fill(0),
+      chain: Array.isArray(p.chain) && p.chain.length ? p.chain : base.chain
     };
   } catch {
     return base;
@@ -1200,24 +1071,13 @@ function loadState() {
 }
 
 function saveState() {
-  try {
-    localStorage.setItem("azm_roulette_state_v1", JSON.stringify(state));
-  } catch {}
+  try { localStorage.setItem("azm_roulette_state_v3", JSON.stringify(state)); } catch {}
 }
 
 async function sha256Hex(msg) {
-  try {
-    const enc = new TextEncoder().encode(msg);
-    const buf = await crypto.subtle.digest("SHA-256", enc);
-    return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, "0")).join("");
-  } catch {
-    let h = 2166136261;
-    for (let i = 0; i < msg.length; i++) {
-      h ^= msg.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return ((h >>> 0).toString(16).padStart(8, "0")).repeat(8);
-  }
+  const enc = new TextEncoder().encode(msg);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, "0")).join("");
 }
 
 async function appendBlock(type, details) {
@@ -1231,13 +1091,10 @@ async function appendBlock(type, details) {
 
 function showToast(msg) {
   const el = document.getElementById("toast-banner");
-  if (!el) return;
   el.textContent = msg;
   el.style.display = "block";
   clearTimeout(window.__toastTimer);
-  window.__toastTimer = setTimeout(() => {
-    el.style.display = "none";
-  }, 2800);
+  window.__toastTimer = setTimeout(() => { el.style.display = "none"; }, 2600);
 }
 
 function applyLanguageTexts() {
@@ -1251,73 +1108,65 @@ function applyLanguageTexts() {
     if (b) b.classList.toggle("active", code === lang);
   });
 
-  const setTxt = (id, val) => {
-    const el = document.getElementById(id);
-    if (el && val !== undefined) el.textContent = val;
-  };
-  const setPh = (id, val) => {
-    const el = document.getElementById(id);
-    if (el && val !== undefined) el.placeholder = val;
-  };
+  const setTxt = (id, v) => { const el = document.getElementById(id); if (el && v !== undefined) el.textContent = v; };
+  const setPh = (id, v) => { const el = document.getElementById(id); if (el && v !== undefined) el.placeholder = v; };
 
-  setTxt("t-app-title", d.appTitle);
-  setTxt("tab-roulette", d.tabRoulette);
-  setTxt("tab-wallet", d.tabWallet);
-  setTxt("tab-buckets", d.tabBuckets);
-  setTxt("tab-vault", d.tabVault);
-  setTxt("lbl-balance", d.lblBalance);
-  setTxt("lbl-current-bet", d.lblCurrentBet);
-  setTxt("lbl-max-bet", d.lblMaxBet);
-  setTxt("lbl-last-win", d.lblLastWin);
-  setTxt("lbl-coin-tray", d.lblCoinTray);
-  setTxt("trash-dropzone", d.trashText);
-  setTxt("btn-clear", d.btnClear);
-  setTxt("btn-undo", d.btnUndo);
-  setTxt("btn-double", d.btnDouble);
-  setTxt("btn-spin", d.btnSpin);
-  setTxt("w-title-identity", d.wTitleIdentity);
-  setTxt("w-lbl-addr", d.wLblAddr);
-  setTxt("w-lbl-pubkey", d.wLblPubKey);
-  setTxt("w-lbl-privkey", d.wLblPrivKey);
-  setTxt("btn-toggle-priv", d.btnTogglePriv);
-  setTxt("btn-copy-addr", d.btnCopyAddr);
-  setTxt("btn-new-keys", d.btnNewKeys);
-  setTxt("w-qr-title", d.wQrTitle);
-  setTxt("w-qr-desc", d.wQrDesc);
-  setTxt("w-send-title", d.wSendTitle);
+  Object.entries({
+    "t-app-title": d.appTitle,
+    "tab-roulette": d.tabRoulette,
+    "tab-wallet": d.tabWallet,
+    "tab-buckets": d.tabBuckets,
+    "tab-vault": d.tabVault,
+    "lbl-balance": d.lblBalance,
+    "lbl-current-bet": d.lblCurrentBet,
+    "lbl-max-bet": d.lblMaxBet,
+    "lbl-last-win": d.lblLastWin,
+    "lbl-coin-tray": d.lblCoinTray,
+    "trash-dropzone": d.trashText,
+    "btn-clear": d.btnClear,
+    "btn-undo": d.btnUndo,
+    "btn-double": d.btnDouble,
+    "btn-spin": d.btnSpin,
+    "w-title-identity": d.wTitleIdentity,
+    "w-lbl-addr": d.wLblAddr,
+    "w-lbl-pubkey": d.wLblPubKey,
+    "w-lbl-privkey": d.wLblPrivKey,
+    "btn-toggle-priv": d.btnTogglePriv,
+    "btn-copy-addr": d.btnCopyAddr,
+    "btn-new-keys": d.btnNewKeys,
+    "w-qr-title": d.wQrTitle,
+    "w-qr-desc": d.wQrDesc,
+    "w-send-title": d.wSendTitle,
+    "btn-sign-send": d.btnSignSend,
+    "w-bt-title": d.wBtTitle,
+    "btn-gen-bt": d.btnGenBt,
+    "btn-apply-bt": d.btnApplyBt,
+    "w-rew-title": d.wRewTitle,
+    "btn-welcome": d.btnWelcome,
+    "btn-ad": d.btnAd,
+    "btn-daily": d.btnDaily,
+    "btn-ref": d.btnRef,
+    "b-main-title": d.bMainTitle,
+    "b-lbl-welcome": d.bLblWelcome,
+    "b-lbl-roulette": d.bLblRoulette,
+    "b-lbl-reward": d.bLblReward,
+    "b-lbl-house": d.bLblHouse,
+    "b-ledger-title": d.bLedgerTitle,
+    "v-main-title": d.vMainTitle,
+    "btn-unlock-vault": d.btnUnlockVault,
+    "v-lbl-maxbet": d.vLblMaxBet,
+    "btn-upd-maxbet": d.btnUpdMaxBet,
+    "v-lbl-refill": d.vLblRefill,
+    "btn-upd-refill": d.btnUpdRefill,
+    "btn-reset-demo": d.btnResetDemo,
+    "m-wheel-title": d.wheelTitle,
+    "btn-modal-ok": d.modalOk
+  }).forEach(([id, v]) => setTxt(id, v));
+
   setPh("send-to", d.sendToPh);
   setPh("send-amt", d.sendAmtPh);
-  setTxt("btn-sign-send", d.btnSignSend);
-  setTxt("w-bt-title", d.wBtTitle);
-  setTxt("w-bt-desc", d.wBtDesc);
-  setTxt("btn-gen-bt", d.btnGenBt);
-  setTxt("btn-apply-bt", d.btnApplyBt);
   setPh("bt-packet-input", d.btPh);
-  setTxt("w-rew-title", d.wRewTitle);
-  setTxt("btn-welcome", d.btnWelcome);
-  setTxt("btn-ad", d.btnAd);
-  setTxt("btn-daily", d.btnDaily);
-  setTxt("btn-ref", d.btnRef);
-  setTxt("b-main-title", d.bMainTitle);
-  setTxt("b-lbl-welcome", d.bLblWelcome);
-  setTxt("b-desc-welcome", d.bDescWelcome);
-  setTxt("b-lbl-roulette", d.bLblRoulette);
-  setTxt("b-desc-roulette", d.bDescRoulette);
-  setTxt("b-lbl-reward", d.bLblReward);
-  setTxt("b-desc-reward", d.bDescReward);
-  setTxt("b-lbl-house", d.bLblHouse);
-  setTxt("b-desc-house", d.bDescHouse);
-  setTxt("b-ledger-title", d.bLedgerTitle);
-  setTxt("v-main-title", d.vMainTitle);
   setPh("vault-pin", d.vaultPinPh);
-  setTxt("btn-unlock-vault", d.btnUnlockVault);
-  setTxt("v-lbl-maxbet", d.vLblMaxBet);
-  setTxt("btn-upd-maxbet", d.btnUpdMaxBet);
-  setTxt("v-lbl-refill", d.vLblRefill);
-  setTxt("btn-upd-refill", d.btnUpdRefill);
-  setTxt("btn-reset-demo", d.btnResetDemo);
-  setTxt("m-wheel-title", d.wheelTitle);
-  setTxt("btn-modal-ok", d.modalOk);
 }
 
 function setLang(lang) {
@@ -1342,14 +1191,12 @@ function resetZoom() {
 function applyZoom() {
   const z = Number(state.zoom || 1);
   document.documentElement.style.setProperty("--zoom", z);
-  const lbl = document.getElementById("zoom-label");
-  if (lbl) lbl.textContent = Math.round(z * 100) + "%";
+  document.getElementById("zoom-label").textContent = Math.round(z * 100) + "%";
 }
 
 function switchTab(tabName, btnEl) {
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  const target = document.getElementById("panel-" + tabName);
-  if (target) target.classList.add("active");
+  document.getElementById("panel-" + tabName).classList.add("active");
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   if (btnEl) btnEl.classList.add("active");
   renderAll();
@@ -1357,37 +1204,34 @@ function switchTab(tabName, btnEl) {
 
 function getTotalCurrentBetUnits() {
   let sum = 0n;
-  for (const v of Object.values(state.bets || {})) {
-    sum += BigInt(v || "0");
-  }
+  for (const v of Object.values(state.bets || {})) sum += BigInt(v || "0");
   return sum;
 }
 
 function renderCoinTray() {
   const tray = document.getElementById("coin-tray");
-  if (!tray) return;
   const bal = BigInt(state.wallet.balanceUnits || "0");
   const currentBet = getTotalCurrentBetUnits();
-  const remainingBetCap = BigInt(state.maxBetUnits || "500000000000") - currentBet;
-  const maxAllowedChip = bal < remainingBetCap ? bal : remainingBetCap;
+  const remainingCap = BigInt(state.maxBetUnits || "500000000000") - currentBet;
+  const maxAllowed = bal < remainingCap ? bal : remainingCap;
 
-  if (BigInt(state.selectedChipUnits || "100000000") > maxAllowedChip && maxAllowedChip > 0n) {
-    const fitting = [...COIN_DENOMS].reverse().find(c => c.units <= maxAllowedChip);
-    if (fitting) state.selectedChipUnits = fitting.units.toString();
+  if (BigInt(state.selectedChipUnits || "100000000") > maxAllowed && maxAllowed > 0n) {
+    const fit = [...COIN_DENOMS].reverse().find(c => c.units <= maxAllowed);
+    if (fit) state.selectedChipUnits = fit.units.toString();
   }
 
   tray.innerHTML = "";
-  let firstAffordableEl = null;
+  let firstAffordable = null;
 
   COIN_DENOMS.forEach(c => {
     const el = document.createElement("div");
-    const isSelected = BigInt(state.selectedChipUnits || "100000000") === c.units;
-    const isAffordable = c.units <= maxAllowedChip && bal > 0n;
-    el.className = "chip-item" + (isSelected ? " selected" : "") + (!isAffordable ? " dimmed" : "");
+    const sel = BigInt(state.selectedChipUnits) === c.units;
+    const ok = c.units <= maxAllowed && bal > 0n;
+    el.className = "chip-item" + (sel ? " selected" : "") + (!ok ? " dimmed" : "");
     el.textContent = c.label;
     el.onclick = () => {
       if (bal <= 0n) {
-        showToast("0 AZM");
+        showToast("Wallet 0 AZM — Claim Welcome Bonus");
         return;
       }
       state.selectedChipUnits = c.units.toString();
@@ -1395,25 +1239,19 @@ function renderCoinTray() {
       renderCoinTray();
     };
     tray.appendChild(el);
-    if (isAffordable && !firstAffordableEl) firstAffordableEl = el;
+    if (ok && !firstAffordable) firstAffordable = el;
   });
 
   const selObj = COIN_DENOMS.find(c => c.units.toString() === state.selectedChipUnits);
-  const selLbl = document.getElementById("lbl-selected-chip");
-  if (selLbl) {
-    selLbl.textContent = "Chip: " + (selObj ? selObj.label + " AZM" : fmtAzm(BigInt(state.selectedChipUnits || "100000000")));
-  }
+  document.getElementById("lbl-selected-chip").textContent = "Chip: " + (selObj ? selObj.label + " AZM" : "");
 
-  if (bal < 500000000n && firstAffordableEl) {
-    try {
-      firstAffordableEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    } catch {}
+  if (bal < 500000000n && firstAffordable) {
+    try { firstAffordable.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); } catch {}
   }
 }
 
 function buildNumberGrid() {
   const grid = document.getElementById("nums-3x12");
-  if (!grid) return;
   grid.innerHTML = "";
   for (let r = 0; r < 3; r++) {
     for (let col = 0; col < 12; col++) {
@@ -1423,74 +1261,37 @@ function buildNumberGrid() {
       cell.className = "num-cell " + (isRed ? "red" : "black") + (state.lastHit === n ? " last-hit" : "");
       cell.id = "cell-" + n;
       cell.dataset.bet = "NUM_" + n;
-      cell.innerHTML = `<span>${n}</span><span class="hit-count" id="freq-${n}">${state.freq[n] || 0}</span>`;
-      cell.onclick = () => placeBetOnKey("NUM_" + n, cell);
+      cell.innerHTML = `<span>${n}</span><span class="hit-count">${state.freq[n] || 0}</span>`;
+      cell.onclick = () => placeBetOnKey("NUM_" + n);
       grid.appendChild(cell);
     }
   }
-  const f0 = document.getElementById("freq-0");
-  if (f0) f0.textContent = state.freq[0] || 0;
-  const z0 = document.getElementById("cell-0");
-  if (z0) z0.classList.toggle("last-hit", state.lastHit === 0);
-  addInvisibleSplitHotspots();
+  document.querySelector("#cell-0 .hit-count").textContent = state.freq[0] || 0;
+  document.getElementById("cell-0").classList.toggle("last-hit", state.lastHit === 0);
 }
 
-function addInvisibleSplitHotspots() {
-  const grid = document.getElementById("nums-3x12");
-  if (!grid) return;
-  grid.querySelectorAll(".hotspot-invisible").forEach(h => h.remove());
+function placeNumber(n) { placeBetOnKey("NUM_" + n); }
+function placeOutside(code) { placeBetOnKey(code); }
 
-  for (let r = 0; r < 3; r++) {
-    for (let col = 0; col < 11; col++) {
-      const n1 = col * 3 + (3 - r);
-      const n2 = (col + 1) * 3 + (3 - r);
-      const hs = document.createElement("div");
-      hs.className = "hotspot-invisible";
-      hs.dataset.bet = `SPLIT_${Math.min(n1, n2)}_${Math.max(n1, n2)}`;
-      hs.style.width = "16px";
-      hs.style.height = "26px";
-      hs.style.left = `calc(${((col + 1) / 12) * 100}% - 8px)`;
-      hs.style.top = `${r * 60 + 14}px`;
-      hs.onclick = (e) => {
-        e.stopPropagation();
-        placeBetOnKey(hs.dataset.bet, hs);
-      };
-      grid.appendChild(hs);
-    }
-  }
-}
-
-function placeNumber(n, el) {
-  placeBetOnKey("NUM_" + n, el);
-}
-
-function placeOutside(code, el) {
-  placeBetOnKey(code, el);
-}
-
-function placeBetOnKey(betKey, targetEl) {
+function placeBetOnKey(betKey) {
   const bal = BigInt(state.wallet.balanceUnits || "0");
   const chip = BigInt(state.selectedChipUnits || "100000000");
   const currentBet = getTotalCurrentBetUnits();
   const maxBet = BigInt(state.maxBetUnits || "500000000000");
 
   if (bal <= 0n) {
-    showToast("0 AZM");
+    showToast("Balance 0 AZM — Claim Welcome in Wallet");
     return;
   }
-  if (chip <= 0n) return;
-
-  const actualAdd = chip <= bal ? chip : bal;
-  if (currentBet + actualAdd > maxBet) {
-    showToast(`Max Bet: ${fmtAzm(maxBet)}`);
+  const add = chip <= bal ? chip : bal;
+  if (currentBet + add > maxBet) {
+    showToast("Max Bet Limit Reached");
     return;
   }
 
-  state.wallet.balanceUnits = (bal - actualAdd).toString();
-  const prevKeyUnits = BigInt(state.bets[betKey] || "0");
-  state.bets[betKey] = (prevKeyUnits + actualAdd).toString();
-  state.betHistory.push({ key: betKey, units: actualAdd.toString() });
-
+  state.wallet.balanceUnits = (bal - add).toString();
+  state.bets[betKey] = (BigInt(state.bets[betKey] || "0") + add).toString();
+  state.betHistory.push({ key: betKey, units: add.toString() });
   saveState();
   renderAll();
 }
@@ -1499,12 +1300,10 @@ function undoBet() {
   const last = state.betHistory.pop();
   if (!last) return;
   const u = BigInt(last.units);
-  const cur = BigInt(state.bets[last.key] || "0");
-  const nextVal = cur - u;
-  if (nextVal <= 0n) delete state.bets[last.key];
-  else state.bets[last.key] = nextVal.toString();
-
-  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + u).toString();
+  const next = BigInt(state.bets[last.key] || "0") - u;
+  if (next <= 0n) delete state.bets[last.key];
+  else state.bets[last.key] = next.toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + u).toString();
   saveState();
   renderAll();
 }
@@ -1512,7 +1311,7 @@ function undoBet() {
 function clearBets() {
   let refund = 0n;
   for (const v of Object.values(state.bets || {})) refund += BigInt(v || "0");
-  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + refund).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + refund).toString();
   state.bets = {};
   state.betHistory = [];
   saveState();
@@ -1523,16 +1322,9 @@ function doubleBets() {
   const currentBet = getTotalCurrentBetUnits();
   const maxBet = BigInt(state.maxBetUnits || "500000000000");
   const bal = BigInt(state.wallet.balanceUnits || "0");
-
   if (currentBet <= 0n) return;
-  if (currentBet * 2n > maxBet) {
-    showToast(`Max Bet: ${fmtAzm(maxBet)}`);
-    return;
-  }
-  if (bal < currentBet) {
-    showToast("Insufficient AZM");
-    return;
-  }
+  if (currentBet * 2n > maxBet) { showToast("Exceeds Max Bet"); return; }
+  if (bal < currentBet) { showToast("Insufficient Balance"); return; }
 
   state.wallet.balanceUnits = (bal - currentBet).toString();
   for (const k of Object.keys(state.bets)) {
@@ -1544,43 +1336,89 @@ function doubleBets() {
   renderAll();
 }
 
-function ensureRoulettePoolLiquidity(neededUnits) {
-  let house = BigInt(state.buckets.housePoolUnits || "0");
-  let reserve = BigInt(state.buckets.rouletteReserveUnits || "0");
-  const thresh = BigInt(state.refillThresholdUnits || "100000000000000");
-  const batch = BigInt(state.refillBatchUnits || "500000000000000");
+function drawWheelFrame(wheelAngleRad, ballAngleRad, ballRadiusPx) {
+  const canvas = document.getElementById("roulette-wheel-canvas");
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const outerR = cx - 4;
+  const innerR = outerR * 0.64;
+  const slice = (Math.PI * 2) / WHEEL_ORDER.length;
 
-  if ((house < thresh || house < neededUnits) && reserve > 0n) {
-    const want = batch > neededUnits ? batch : neededUnits;
-    const transfer = want <= reserve ? want : reserve;
-    reserve -= transfer;
-    house += transfer;
-    state.buckets.rouletteReserveUnits = reserve.toString();
-    state.buckets.housePoolUnits = house.toString();
-    appendBlock("AUTO_REFILL", `Transferred ${fmtAzm(transfer)} from Roulette Reserve to House Pool`);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(wheelAngleRad);
+
+  for (let i = 0; i < WHEEL_ORDER.length; i++) {
+    const num = WHEEL_ORDER[i];
+    const start = i * slice - Math.PI / 2 - slice / 2;
+    const end = start + slice;
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, outerR, start, end);
+    ctx.closePath();
+    ctx.fillStyle = num === 0 ? "#16803c" : (RED_NUMS.has(num) ? "#c92a2a" : "#1c1f24");
+    ctx.fill();
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = "#f5c542";
+    ctx.stroke();
+
+    ctx.save();
+    ctx.rotate(start + slice / 2);
+    ctx.translate(0, -(outerR - 17));
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 10.5px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(num), 0, 0);
+    ctx.restore();
   }
+
+  ctx.beginPath();
+  ctx.arc(0, 0, innerR, 0, Math.PI * 2);
+  ctx.fillStyle = "#12261d";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#f5c542";
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, innerR * 0.35, 0, Math.PI * 2);
+  ctx.fillStyle = "#c9971c";
+  ctx.fill();
+  ctx.restore();
+
+  const bx = cx + Math.cos(ballAngleRad) * ballRadiusPx;
+  const by = cy + Math.sin(ballAngleRad) * ballRadiusPx;
+  ctx.beginPath();
+  ctx.arc(bx, by, 6.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#111";
+  ctx.stroke();
 }
 
 function calcPayoutForNumber(betKey, winNum, stakeUnits) {
-  if (betKey === "NUM_" + winNum) return stakeUnits * 36n;
-  if (betKey.startsWith("SPLIT_")) {
-    const parts = betKey.split("_").slice(1).map(Number);
-    if (parts.includes(winNum)) return stakeUnits * 18n;
-  }
+  const s = BigInt(stakeUnits || 0n);
+  if (betKey === "NUM_" + winNum) return s * 36n;
   if (winNum === 0) return 0n;
-  if (betKey === "RED" && RED_NUMS.has(winNum)) return stakeUnits * 2n;
-  if (betKey === "BLACK" && !RED_NUMS.has(winNum)) return stakeUnits * 2n;
-  if (betKey === "EVEN" && winNum % 2 === 0) return stakeUnits * 2n;
-  if (betKey === "ODD" && winNum % 2 === 1) return stakeUnits * 2n;
-  if (betKey === "LOW" && winNum >= 1 && winNum <= 18) return stakeUnits * 2n;
-  if (betKey === "HIGH" && winNum >= 19 && winNum <= 36) return stakeUnits * 2n;
-  if (betKey === "DOZEN_1" && winNum >= 1 && winNum <= 12) return stakeUnits * 3n;
-  if (betKey === "DOZEN_2" && winNum >= 13 && winNum <= 24) return stakeUnits * 3n;
-  if (betKey === "DOZEN_3" && winNum >= 25 && winNum <= 36) return stakeUnits * 3n;
+  if (betKey === "RED" && RED_NUMS.has(winNum)) return s * 2n;
+  if (betKey === "BLACK" && !RED_NUMS.has(winNum)) return s * 2n;
+  if (betKey === "EVEN" && winNum % 2 === 0) return s * 2n;
+  if (betKey === "ODD" && winNum % 2 === 1) return s * 2n;
+  if (betKey === "LOW" && winNum >= 1 && winNum <= 18) return s * 2n;
+  if (betKey === "HIGH" && winNum >= 19 && winNum <= 36) return s * 2n;
+  if (betKey === "DOZEN_1" && winNum >= 1 && winNum <= 12) return s * 3n;
+  if (betKey === "DOZEN_2" && winNum >= 13 && winNum <= 24) return s * 3n;
+  if (betKey === "DOZEN_3" && winNum >= 25 && winNum <= 36) return s * 3n;
   return 0n;
 }
 
-async function spinRoulette() {
+function spinRoulette() {
   const totalBet = getTotalCurrentBetUnits();
   if (totalBet <= 0n) {
     showToast("Place a bet first");
@@ -1595,52 +1433,64 @@ async function spinRoulette() {
   }
 
   const modal = document.getElementById("wheel-modal");
-  const animEl = document.getElementById("wheel-result-anim");
   const outEl = document.getElementById("wheel-outcome-text");
   modal.classList.add("open");
-  outEl.textContent = "Spinning...";
+  outEl.textContent = "Spinning wheel...";
 
-  let ticks = 0;
-  const interval = setInterval(() => {
-    const randDisp = Math.floor(Math.random() * 37);
-    animEl.textContent = randDisp;
-    animEl.style.background = randDisp === 0 ? "#16803c" : (RED_NUMS.has(randDisp) ? "#c92a2a" : "#1c1f24");
-    ticks++;
-    if (ticks >= 14) {
-      clearInterval(interval);
-      finalizeSpin(winNum, totalBet, animEl, outEl);
+  const winIndex = WHEEL_ORDER.indexOf(winNum);
+  const slice = (Math.PI * 2) / WHEEL_ORDER.length;
+  const targetWheelAngle = -(winIndex * slice);
+  const startWheel = 0;
+  const totalWheelSpin = Math.PI * 10 + targetWheelAngle;
+
+  const duration = 2400;
+  const t0 = performance.now();
+
+  function frame(now) {
+    const p = Math.min(1, (now - t0) / duration);
+    const ease = 1 - Math.pow(1 - p, 3);
+    const wAng = startWheel + totalWheelSpin * ease;
+    const bAng = -Math.PI / 2 - (Math.PI * 14 * ease);
+    const bRad = 114 - 16 * ease;
+    drawWheelFrame(wAng, bAng, bRad);
+
+    if (p < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      drawWheelFrame(targetWheelAngle, -Math.PI / 2, 102);
+      finalizeSpin(winNum, totalBet, outEl);
     }
-  }, 85);
+  }
+  requestAnimationFrame(frame);
 }
 
-async function finalizeSpin(winNum, totalBet, animEl, outEl) {
-  animEl.textContent = winNum;
-  animEl.style.background = winNum === 0 ? "#16803c" : (RED_NUMS.has(winNum) ? "#c92a2a" : "#1c1f24");
-
+async function finalizeSpin(winNum, totalBet, outEl) {
+  const stakeBig = BigInt(totalBet || 0n);
   let totalReturn = 0n;
   for (const [k, vStr] of Object.entries(state.bets || {})) {
-    totalReturn += calcPayoutForNumber(k, winNum, BigInt(vStr));
+    totalReturn += calcPayoutForNumber(k, winNum, BigInt(vStr || "0"));
   }
 
-  let house = BigInt(state.buckets.housePoolUnits || "0") + totalBet;
-  if (totalReturn > 0n) {
-    if (house < totalReturn) {
-      state.buckets.housePoolUnits = house.toString();
-      ensureRoulettePoolLiquidity(totalReturn - house);
-      house = BigInt(state.buckets.housePoolUnits || "0");
-    }
-    const paid = house >= totalReturn ? totalReturn : house;
-    house -= paid;
-    state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + paid).toString();
-    totalReturn = paid;
+  let house = BigInt(state.buckets.housePoolUnits || "0") + stakeBig;
+  let reserve = BigInt(state.buckets.rouletteReserveUnits || "0");
+  if (totalReturn > house && reserve > 0n) {
+    const need = totalReturn - house;
+    const move = need <= reserve ? need : reserve;
+    reserve -= move;
+    house += move;
+    state.buckets.rouletteReserveUnits = reserve.toString();
   }
+
+  const paid = house >= totalReturn ? totalReturn : house;
+  house -= paid;
   state.buckets.housePoolUnits = house.toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + paid).toString();
 
   state.bets = {};
   state.betHistory = [];
-  state.spinCount += 1;
-  state.roundSpins += 1;
-  state.freq[winNum] = (state.freq[winNum] || 0) + 1;
+  state.spinCount = Number(state.spinCount || 0) + 1;
+  state.roundSpins = Number(state.roundSpins || 0) + 1;
+  state.freq[winNum] = Number(state.freq[winNum] || 0) + 1;
   state.lastHit = winNum;
   if (!state.roundUniqueSet.includes(winNum)) state.roundUniqueSet.push(winNum);
   if (state.roundUniqueSet.length >= 37 || state.roundSpins >= 37) {
@@ -1648,18 +1498,17 @@ async function finalizeSpin(winNum, totalBet, animEl, outEl) {
     state.roundUniqueSet = [];
   }
 
-  const net = totalReturn - totalBet;
+  const net = paid - stakeBig;
   state.lastResultText = `#${winNum} (${fmtAzm(net)})`;
-  outEl.textContent = `Number ${winNum} | Return: ${fmtAzm(totalReturn)} (Net: ${fmtAzm(net)})`;
+  outEl.textContent = `Hit #${winNum} | Return: ${fmtAzm(paid)} | Net: ${fmtAzm(net)}`;
 
-  await appendBlock("ROULETTE_SPIN", `Spin #${state.spinCount} Hit ${winNum}, Bet ${fmtAzm(totalBet)}, Return ${fmtAzm(totalReturn)}`);
+  await appendBlock("ROULETTE_SPIN", `Spin #${state.spinCount} -> #${winNum}, Bet ${fmtAzm(stakeBig)}, Return ${fmtAzm(paid)}`);
   saveState();
   renderAll();
 }
 
 function closeWheelModal() {
-  const m = document.getElementById("wheel-modal");
-  if (m) m.classList.remove("open");
+  document.getElementById("wheel-modal").classList.remove("open");
 }
 
 let dragState = null;
@@ -1667,102 +1516,77 @@ const floatingCoin = document.getElementById("floating-drag-coin");
 const trashZone = document.getElementById("trash-dropzone");
 
 function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
-  let startX = 0, startY = 0, active = false;
+  let sx = 0, sy = 0, active = false;
 
   chipEl.addEventListener("pointerdown", (e) => {
     e.stopPropagation();
     try { chipEl.setPointerCapture(e.pointerId); } catch {}
-    startX = e.clientX;
-    startY = e.clientY;
-    active = true;
-    dragState = { betKey, units: unitsBig, chipEl, startedDrag: false };
+    sx = e.clientX; sy = e.clientY; active = true;
+    dragState = { betKey, units: unitsBig, chipEl, started: false };
   });
 
   chipEl.addEventListener("pointermove", (e) => {
     if (!active || !dragState) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    if (!dragState.startedDrag && Math.hypot(dx, dy) > 6) {
-      dragState.startedDrag = true;
-      chipEl.classList.add("dragging-source");
-      if (floatingCoin) {
-        floatingCoin.style.display = "flex";
-        floatingCoin.textContent = fmtShortChip(unitsBig);
-      }
+    if (!dragState.started && Math.hypot(e.clientX - sx, e.clientY - sy) > 6) {
+      dragState.started = true;
+      chipEl.style.opacity = "0.35";
+      floatingCoin.style.display = "flex";
+      floatingCoin.textContent = fmtShortChip(unitsBig);
     }
-    if (dragState.startedDrag) {
+    if (dragState.started) {
       e.preventDefault();
-      if (floatingCoin) {
-        floatingCoin.style.left = e.clientX + "px";
-        floatingCoin.style.top = e.clientY + "px";
-      }
-      if (trashZone) {
-        const tr = trashZone.getBoundingClientRect();
-        const overTrash = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
-        trashZone.classList.toggle("drag-over", overTrash);
-      }
+      floatingCoin.style.left = e.clientX + "px";
+      floatingCoin.style.top = e.clientY + "px";
+      const tr = trashZone.getBoundingClientRect();
+      trashZone.classList.toggle("drag-over", e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom);
     }
   });
 
-  const finishPointer = (e) => {
+  const done = (e) => {
     if (!active || !dragState) return;
     active = false;
-    const wasDrag = dragState.startedDrag;
-    const sourceKey = dragState.betKey;
-    const moveUnits = dragState.units;
+    const wasDrag = dragState.started;
+    const srcKey = dragState.betKey;
+    const moveU = dragState.units;
+    chipEl.style.opacity = "1";
+    floatingCoin.style.display = "none";
+    trashZone.classList.remove("drag-over");
+    dragState = null;
 
-    chipEl.classList.remove("dragging-source");
-    if (floatingCoin) floatingCoin.style.display = "none";
-    if (trashZone) trashZone.classList.remove("drag-over");
+    if (!wasDrag) { placeBetOnKey(srcKey); return; }
 
-    if (!wasDrag) {
-      placeBetOnKey(sourceKey, chipEl.parentElement);
-      dragState = null;
-      return;
-    }
+    const tr = trashZone.getBoundingClientRect();
+    const overTrash = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
 
-    let overTrash = false;
-    if (trashZone) {
-      const tr = trashZone.getBoundingClientRect();
-      overTrash = e.clientX >= tr.left && e.clientX <= tr.right && e.clientY >= tr.top && e.clientY <= tr.bottom;
-    }
-
-    const curSrc = BigInt(state.bets[sourceKey] || "0");
-    const remSrc = curSrc - moveUnits;
-    if (remSrc <= 0n) delete state.bets[sourceKey];
-    else state.bets[sourceKey] = remSrc.toString();
+    const rem = BigInt(state.bets[srcKey] || "0") - moveU;
+    if (rem <= 0n) delete state.bets[srcKey];
+    else state.bets[srcKey] = rem.toString();
 
     if (overTrash) {
-      state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + moveUnits).toString();
+      state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + moveU).toString();
       showToast("Refunded to Wallet");
     } else {
-      const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-      const dropTarget = elemBelow ? elemBelow.closest("[data-bet]") : null;
-      const destKey = dropTarget ? dropTarget.dataset.bet : sourceKey;
-      state.bets[destKey] = (BigInt(state.bets[destKey] || "0") + moveUnits).toString();
+      const below = document.elementFromPoint(e.clientX, e.clientY);
+      const target = below ? below.closest("[data-bet]") : null;
+      const dstKey = target ? target.dataset.bet : srcKey;
+      state.bets[dstKey] = (BigInt(state.bets[dstKey] || "0") + moveU).toString();
     }
-
-    dragState = null;
     saveState();
     renderAll();
   };
 
-  chipEl.addEventListener("pointerup", finishPointer);
-  chipEl.addEventListener("pointercancel", finishPointer);
+  chipEl.addEventListener("pointerup", done);
+  chipEl.addEventListener("pointercancel", done);
 }
 
 function renderPlacedChips() {
   document.querySelectorAll(".placed-chip").forEach(c => c.remove());
-  for (const [key, valStr] of Object.entries(state.bets || {})) {
-    const u = BigInt(valStr || "0");
+  for (const [key, vStr] of Object.entries(state.bets || {})) {
+    const u = BigInt(vStr || "0");
     if (u <= 0n) continue;
-    let host = null;
-    if (key.startsWith("NUM_")) {
-      const n = key.split("_")[1];
-      host = n === "0" ? document.getElementById("cell-0") : document.getElementById("cell-" + n);
-    } else {
-      host = document.querySelector(`[data-bet="${key}"]`);
-    }
+    const host = key.startsWith("NUM_")
+      ? document.getElementById("cell-" + key.split("_")[1])
+      : document.querySelector(`[data-bet="${key}"]`);
     if (!host) continue;
     const badge = document.createElement("div");
     badge.className = "placed-chip";
@@ -1773,264 +1597,158 @@ function renderPlacedChips() {
 }
 
 async function claimWelcome() {
-  if (state.welcomeClaimed) {
-    showToast("Welcome bonus already claimed");
-    return;
-  }
+  if (state.welcomeClaimed) { showToast("Already claimed"); return; }
   const bonus = 5000000000n;
-  const wRes = BigInt(state.buckets.welcomeUnits || "0");
-  if (wRes < bonus) {
-    showToast("Welcome reserve empty");
-    return;
-  }
-  state.buckets.welcomeUnits = (wRes - bonus).toString();
-  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + bonus).toString();
+  const w = BigInt(state.buckets.welcomeUnits || "0");
+  if (w < bonus) return;
+  state.buckets.welcomeUnits = (w - bonus).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + bonus).toString();
   state.welcomeClaimed = true;
-  await appendBlock("WELCOME_BONUS", `Credited ${fmtAzm(bonus)} to ${state.wallet.address}`);
-  saveState();
-  renderAll();
-  showToast("+50.00000000 AZM");
+  await appendBlock("WELCOME", "+50 AZM");
+  saveState(); renderAll(); showToast("+50.00000000 AZM");
 }
 
 async function claimAdReward() {
   const amt = 500000000n;
-  const rew = BigInt(state.buckets.rewardUnits || "0");
-  if (rew < amt) return;
-  state.buckets.rewardUnits = (rew - amt).toString();
-  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
-  state.adCount += 1;
-  await appendBlock("AD_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
-  saveState();
-  renderAll();
-  showToast("+5.00000000 AZM");
+  const r = BigInt(state.buckets.rewardUnits || "0");
+  if (r < amt) return;
+  state.buckets.rewardUnits = (r - amt).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + amt).toString();
+  await appendBlock("AD", "+5 AZM");
+  saveState(); renderAll(); showToast("+5.00000000 AZM");
 }
 
 async function claimDailyReward() {
   const now = Date.now();
-  const dayMs = 24 * 60 * 60 * 1000;
-  if (now - Number(state.lastDailyClaim || 0) < dayMs) {
-    showToast("24h cooldown active");
-    return;
-  }
+  if (now - Number(state.lastDailyClaim || 0) < 86400000) { showToast("24h wait"); return; }
   const amt = 100000000n;
-  const rew = BigInt(state.buckets.rewardUnits || "0");
-  if (rew < amt) return;
-  state.buckets.rewardUnits = (rew - amt).toString();
-  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
+  const r = BigInt(state.buckets.rewardUnits || "0");
+  if (r < amt) return;
+  state.buckets.rewardUnits = (r - amt).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + amt).toString();
   state.lastDailyClaim = now;
-  await appendBlock("DAILY_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
-  saveState();
-  renderAll();
-  showToast("+1.00000000 AZM");
+  await appendBlock("DAILY", "+1 AZM");
+  saveState(); renderAll(); showToast("+1.00000000 AZM");
 }
 
 async function claimRefReward() {
   const amt = 1000000000n;
-  const rew = BigInt(state.buckets.rewardUnits || "0");
-  if (rew < amt) return;
-  state.buckets.rewardUnits = (rew - amt).toString();
-  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
-  state.refCount += 1;
-  await appendBlock("REF_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
-  saveState();
-  renderAll();
-  showToast("+10.00000000 AZM");
+  const r = BigInt(state.buckets.rewardUnits || "0");
+  if (r < amt) return;
+  state.buckets.rewardUnits = (r - amt).toString();
+  state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + amt).toString();
+  await appendBlock("REFER", "+10 AZM");
+  saveState(); renderAll(); showToast("+10.00000000 AZM");
 }
 
 async function sendSignedAzm() {
-  const toAddr = document.getElementById("send-to").value.trim();
-  const amtNum = parseFloat(document.getElementById("send-amt").value);
-  if (!toAddr || isNaN(amtNum) || amtNum <= 0) {
-    showToast("Enter valid address & amount");
-    return;
-  }
-  const units = BigInt(Math.round(amtNum * 1e8));
+  const to = document.getElementById("send-to").value.trim();
+  const amt = parseFloat(document.getElementById("send-amt").value);
+  if (!to || isNaN(amt) || amt <= 0) { showToast("Enter address & amount"); return; }
+  const u = BigInt(Math.round(amt * 1e8));
   const bal = BigInt(state.wallet.balanceUnits || "0");
-  if (units > bal) {
-    showToast("Insufficient balance");
-    return;
-  }
-
-  state.wallet.balanceUnits = (bal - units).toString();
-  const payload = `${state.wallet.address}->${toAddr}:${units.toString()}|pub:${state.wallet.publicKey}`;
-  const sig = await sha256Hex(payload + "|sig:" + state.wallet.privateKey);
-
+  if (u > bal) { showToast("Insufficient AZM"); return; }
+  state.wallet.balanceUnits = (bal - u).toString();
+  const sig = await sha256Hex(`${state.wallet.address}->${to}:${u}|${state.wallet.privateKey}`);
   const box = document.getElementById("last-sig-box");
-  if (box) {
-    box.style.display = "block";
-    box.textContent = `Signed Tx Sent: ${fmtAzm(units)} to ${toAddr}\nDigital Signature (SHA-256): 0x${sig}`;
-  }
-
-  await appendBlock("SIGNED_TRANSFER", `From ${state.wallet.address} to ${toAddr}: ${fmtAzm(units)} | Sig: 0x${sig.slice(0, 16)}...`);
-  saveState();
-  renderAll();
-  showToast("Signed AZM Sent");
+  box.style.display = "block";
+  box.textContent = `Sent: ${fmtAzm(u)} -> ${to}\nSig: 0x${sig}`;
+  await appendBlock("SEND", `${fmtAzm(u)} to ${to}`);
+  saveState(); renderAll(); showToast("Sent");
 }
 
 async function generateOfflinePacket() {
-  const toAddr = document.getElementById("send-to").value.trim() || "BT-PEER-DEVICE";
-  const amtNum = parseFloat(document.getElementById("send-amt").value);
-  if (isNaN(amtNum) || amtNum <= 0) {
-    showToast("Enter amount first");
-    return;
-  }
-  const units = BigInt(Math.round(amtNum * 1e8));
+  const to = document.getElementById("send-to").value.trim() || "BT-PEER";
+  const amt = parseFloat(document.getElementById("send-amt").value);
+  if (isNaN(amt) || amt <= 0) { showToast("Enter amount"); return; }
+  const u = BigInt(Math.round(amt * 1e8));
   const bal = BigInt(state.wallet.balanceUnits || "0");
-  if (units > bal) {
-    showToast("Insufficient balance");
-    return;
-  }
-  state.wallet.balanceUnits = (bal - units).toString();
-  const nonce = randomHex(8);
-  const rawObj = { proto: "AZM-BT-OFFLINE-V1", from: state.wallet.address, to: toAddr, units: units.toString(), nonce };
-  const sig = await sha256Hex(JSON.stringify(rawObj) + "|" + state.wallet.privateKey);
-  const packet = btoa(JSON.stringify({ ...rawObj, sig }));
-
+  if (u > bal) { showToast("Insufficient AZM"); return; }
+  state.wallet.balanceUnits = (bal - u).toString();
+  const obj = { proto: "AZM-BT-V1", from: state.wallet.address, to, units: u.toString(), nonce: randomHex(6) };
+  const sig = await sha256Hex(JSON.stringify(obj) + "|" + state.wallet.privateKey);
+  const pkt = btoa(JSON.stringify({ ...obj, sig }));
   const out = document.getElementById("bt-packet-out");
-  if (out) {
-    out.style.display = "block";
-    out.textContent = packet;
-  }
-  copyText(packet);
-  await appendBlock("OFFLINE_BT_EXPORT", `Exported ${fmtAzm(units)} packet for ${toAddr}`);
-  saveState();
-  renderAll();
+  out.style.display = "block"; out.textContent = pkt;
+  copyText(pkt);
+  await appendBlock("BT_OUT", `${fmtAzm(u)} -> ${to}`);
+  saveState(); renderAll();
 }
 
 async function applyOfflinePacket() {
-  const rawInput = document.getElementById("bt-packet-input").value.trim();
-  if (!rawInput) return;
   try {
-    const decoded = JSON.parse(atob(rawInput));
-    if (decoded.proto !== "AZM-BT-OFFLINE-V1" || !decoded.units) {
-      showToast("Invalid packet");
-      return;
-    }
-    const units = BigInt(decoded.units);
-    if (units <= 0n) return;
-    state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + units).toString();
-    await appendBlock("OFFLINE_BT_IMPORT", `Received ${fmtAzm(units)} from ${decoded.from || "BT-PEER"}`);
-    saveState();
-    renderAll();
-    showToast(`Received ${fmtAzm(units)}`);
-  } catch {
-    showToast("Invalid packet format");
-  }
+    const d = JSON.parse(atob(document.getElementById("bt-packet-input").value.trim()));
+    if (d.proto !== "AZM-BT-V1") { showToast("Invalid packet"); return; }
+    const u = BigInt(d.units);
+    state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits) + u).toString();
+    await appendBlock("BT_IN", `+${fmtAzm(u)}`);
+    saveState(); renderAll(); showToast(`+${fmtAzm(u)}`);
+  } catch { showToast("Invalid packet"); }
 }
 
-function togglePrivKey() {
-  state.showPrivKey = !state.showPrivKey;
-  renderWalletTab();
-}
-
+function togglePrivKey() { state.showPrivKey = !state.showPrivKey; renderWalletTab(); }
 function newWalletKeys() {
   const bal = state.wallet.balanceUnits;
-  const kp = createKeypair();
-  state.wallet = {
-    address: kp.addr,
-    publicKey: kp.pubKey,
-    privateKey: kp.priv,
-    balanceUnits: bal
-  };
-  saveState();
-  renderWalletTab();
-  showToast("New keypair generated");
+  state.wallet = { ...createKeypair(), balanceUnits: bal };
+  saveState(); renderWalletTab(); showToast("New Keys Ready");
 }
-
-function copyText(txt) {
-  try {
-    navigator.clipboard?.writeText(txt);
-  } catch {}
-  showToast("Copied");
-}
+function copyText(t) { try { navigator.clipboard?.writeText(t); } catch {} showToast("Copied"); }
 
 function drawSimpleQr(canvas, text) {
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext("2d");
-  const size = canvas.width;
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, size, size);
-
-  const cells = 21;
-  const margin = 12;
-  const cellPx = Math.floor((size - margin * 2) / cells);
-
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const cells = 21, m = 10, px = Math.floor((canvas.width - m * 2) / cells);
   let seed = 2166136261;
-  for (let i = 0; i < text.length; i++) {
-    seed ^= text.charCodeAt(i);
-    seed = Math.imul(seed, 16777619);
-  }
-
+  for (let i = 0; i < text.length; i++) { seed ^= text.charCodeAt(i); seed = Math.imul(seed, 16777619); }
   ctx.fillStyle = "#0b1712";
   for (let r = 0; r < cells; r++) {
     for (let c = 0; c < cells; c++) {
-      const inTopLeft = r < 7 && c < 7;
-      const inTopRight = r < 7 && c >= cells - 7;
-      const inBotLeft = r >= cells - 7 && c < 7;
+      const f1 = r < 7 && c < 7, f2 = r < 7 && c >= cells - 7, f3 = r >= cells - 7 && c < 7;
       let dark = false;
-      if (inTopLeft || inTopRight || inBotLeft) {
-        const lr = inBotLeft ? r - (cells - 7) : r;
-        const lc = inTopRight ? c - (cells - 7) : c;
-        const border = lr === 0 || lr === 6 || lc === 0 || lc === 6;
-        const center = lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4;
-        dark = border || center;
+      if (f1 || f2 || f3) {
+        const lr = f3 ? r - (cells - 7) : r, lc = f2 ? c - (cells - 7) : c;
+        dark = lr === 0 || lr === 6 || lc === 0 || lc === 6 || (lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4);
       } else {
-        seed ^= seed << 13;
-        seed ^= seed >>> 17;
-        seed ^= seed << 5;
+        seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
         dark = ((seed >>> 0) % 2) === 0;
       }
-      if (dark) {
-        ctx.fillRect(margin + c * cellPx, margin + r * cellPx, cellPx, cellPx);
-      }
+      if (dark) ctx.fillRect(m + c * px, m + r * px, px, px);
     }
   }
 }
 
 function unlockVault() {
-  const pin = document.getElementById("vault-pin").value.trim();
-  if (pin === "AZM-MASTER-2026") {
+  if (document.getElementById("vault-pin").value.trim() === "AZM-MASTER-2026") {
     document.getElementById("vault-controls").style.display = "block";
-    showToast("Master Vault Unlocked");
-  } else {
-    showToast("Invalid Master Code");
-  }
+    showToast("Unlocked");
+  } else showToast("Wrong Code");
 }
 
 function updateMaxBet() {
-  const val = parseFloat(document.getElementById("max-bet-input").value);
-  if (isNaN(val) || val <= 0) return;
-  state.maxBetUnits = BigInt(Math.round(val * 1e8)).toString();
-  saveState();
-  renderAll();
-  showToast(`Max Bet: ${fmtAzm(BigInt(state.maxBetUnits))}`);
+  const v = parseFloat(document.getElementById("max-bet-input").value);
+  if (isNaN(v) || v <= 0) return;
+  state.maxBetUnits = BigInt(Math.round(v * 1e8)).toString();
+  saveState(); renderAll(); showToast("Max Bet Updated");
 }
 
 function updateRefillThresh() {
-  const val = parseFloat(document.getElementById("refill-thresh-input").value);
-  if (isNaN(val) || val <= 0) return;
-  state.refillThresholdUnits = BigInt(Math.round(val * 1e8)).toString();
-  saveState();
-  renderAll();
-  showToast("Threshold updated");
+  const v = parseFloat(document.getElementById("refill-thresh-input").value);
+  if (isNaN(v) || v <= 0) return;
+  state.refillThresholdUnits = BigInt(Math.round(v * 1e8)).toString();
+  saveState(); renderAll(); showToast("Threshold Updated");
 }
 
 function resetDemoState() {
-  localStorage.removeItem("azm_roulette_state_v1");
+  localStorage.removeItem("azm_roulette_state_v3");
   state = defaultState();
-  saveState();
-  applyLanguageTexts();
-  renderAll();
-  showToast("Reset complete");
+  saveState(); applyLanguageTexts(); renderAll(); showToast("Reset Done");
 }
 
 function renderWalletTab() {
-  const pubAddr = document.getElementById("w-pub-addr");
-  const pubKey = document.getElementById("w-pub-key");
-  const privKey = document.getElementById("w-priv-key");
-  if (pubAddr) pubAddr.textContent = state.wallet.address;
-  if (pubKey) pubKey.textContent = state.wallet.publicKey;
-  if (privKey) privKey.textContent = state.showPrivKey ? state.wallet.privateKey : "••••••••••••••••••••••••••••••••";
+  document.getElementById("w-pub-addr").textContent = state.wallet.address;
+  document.getElementById("w-pub-key").textContent = state.wallet.publicKey;
+  document.getElementById("w-priv-key").textContent = state.showPrivKey ? state.wallet.privateKey : "••••••••••••••••••••••••••••••••";
   drawSimpleQr(document.getElementById("qr-canvas"), state.wallet.address);
 }
 
@@ -2043,63 +1761,44 @@ function renderBucketsTab() {
   const bet = getTotalCurrentBetUnits();
   const sumAll = w + r + rw + h + p + bet;
 
-  const bw = document.getElementById("b-welcome");
-  const br = document.getElementById("b-roulette");
-  const brw = document.getElementById("b-reward");
-  const bh = document.getElementById("b-house");
-  const sc = document.getElementById("supply-check-box");
-  const ll = document.getElementById("ledger-list");
+  document.getElementById("b-welcome").textContent = fmtAzm(w);
+  document.getElementById("b-roulette").textContent = fmtAzm(r);
+  document.getElementById("b-reward").textContent = fmtAzm(rw);
+  document.getElementById("b-house").textContent = fmtAzm(h);
+  document.getElementById("supply-check-box").textContent =
+    `Supply: ${fmtAzm(sumAll)} / ${fmtAzm(TOTAL_SUPPLY_UNITS)} (${sumAll === TOTAL_SUPPLY_UNITS ? "100% LOCKED" : "CHECK"})`;
 
-  if (bw) bw.textContent = fmtAzm(w);
-  if (br) br.textContent = fmtAzm(r);
-  if (brw) brw.textContent = fmtAzm(rw);
-  if (bh) bh.textContent = fmtAzm(h);
-  if (sc) {
-    sc.textContent = `Fixed Supply Check: ${fmtAzm(sumAll)} / ${fmtAzm(TOTAL_SUPPLY_UNITS)} (${sumAll === TOTAL_SUPPLY_UNITS ? "VERIFIED 100%" : "CHECK"})`;
-  }
-  if (ll) {
-    ll.innerHTML = [...state.chain].reverse().slice(0, 8).map(b =>
-      `<div class="mono-box">#${b.index} [${b.type}] ${b.note}<br/>Hash: ${b.hash}</div>`
-    ).join("");
-  }
+  document.getElementById("ledger-list").innerHTML = [...state.chain].reverse().slice(0, 6)
+    .map(b => `<div class="mono-box">#${b.index} [${b.type}] ${b.note}\n${b.hash}</div>`).join("");
 }
 
 function renderAll() {
-  try {
-    applyLanguageTexts();
-    const bal = BigInt(state.wallet.balanceUnits || "0");
-    const bet = getTotalCurrentBetUnits();
-    const maxBet = BigInt(state.maxBetUnits || "500000000000");
+  applyLanguageTexts();
+  const bal = BigInt(state.wallet.balanceUnits || "0");
+  const bet = getTotalCurrentBetUnits();
+  const maxBet = BigInt(state.maxBetUnits || "500000000000");
 
-    const uiBal = document.getElementById("ui-balance");
-    const uiBet = document.getElementById("ui-current-bet");
-    const uiMax = document.getElementById("ui-max-bet");
-    const uiLast = document.getElementById("ui-last-result");
-    const uiSpin = document.getElementById("ui-spin-info");
-    const uiHC = document.getElementById("ui-hot-cold");
+  document.getElementById("ui-balance").textContent = fmtAzm(bal);
+  document.getElementById("ui-current-bet").textContent = fmtAzm(bet);
+  document.getElementById("ui-max-bet").textContent = fmtAzm(maxBet);
+  document.getElementById("ui-last-result").textContent = state.lastResultText || "—";
+  document.getElementById("ui-spin-info").textContent = `Spins: ${state.spinCount || 0} | R1: ${(state.roundUniqueSet || []).length}/37`;
 
-    if (uiBal) uiBal.textContent = fmtAzm(bal);
-    if (uiBet) uiBet.textContent = fmtAzm(bet);
-    if (uiMax) uiMax.textContent = fmtAzm(maxBet);
-    if (uiLast) uiLast.textContent = state.lastResultText || "—";
-    if (uiSpin) uiSpin.textContent = `Spins: ${state.spinCount || 0} | R1: ${(state.roundUniqueSet || []).length}/37`;
+  const pairs = (state.freq || Array(37).fill(0)).map((cnt, num) => ({ num, cnt: Number(cnt || 0) }));
+  const hotStr = [...pairs].sort((a, b) => b.cnt - a.cnt).slice(0, 3).map(x => `${x.num}(${x.cnt})`).join(", ");
+  const coldStr = [...pairs].sort((a, b) => a.cnt - b.cnt).slice(0, 3).map(x => `${x.num}(${x.cnt})`).join(", ");
+  document.getElementById("ui-hot-cold").textContent = `Hot: ${hotStr} | Cold: ${coldStr}`;
 
-    const pairs = (state.freq || Array(37).fill(0)).map((cnt, num) => ({ num, cnt: Number(cnt || 0) }));
-    const sortedHot = [...pairs].sort((a, b) => b.cnt - a.cnt);
-    const hotStr = sortedHot.slice(0, 3).map(x => `${x.num}(${x.cnt})`).join(", ");
-    const coldStr = [...pairs].sort((a, b) => a.cnt - b.cnt).slice(0, 3).map(x => `${x.num}(${x.cnt})`).join(", ");
-    if (uiHC) uiHC.textContent = `Hot: ${hotStr} | Cold: ${coldStr}`;
-  } catch {}
-
-  try { renderCoinTray(); } catch {}
-  try { buildNumberGrid(); } catch {}
-  try { renderPlacedChips(); } catch {}
-  try { renderWalletTab(); } catch {}
-  try { renderBucketsTab(); } catch {}
+  renderCoinTray();
+  buildNumberGrid();
+  renderPlacedChips();
+  renderWalletTab();
+  renderBucketsTab();
 }
 
 applyZoom();
 renderAll();
+drawWheelFrame(0, -Math.PI / 2, 102);
 </script>
 </body>
 </html>
