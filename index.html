@@ -37,7 +37,7 @@
     padding: 0 0 90px 0;
     background: radial-gradient(circle at top, #123827 0%, #07140e 100%);
     color: var(--text-main);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", "Noto Sans Devanagari", sans-serif;
     overflow-x: hidden;
     overscroll-behavior-y: contain;
   }
@@ -551,6 +551,7 @@
     direction: ltr;
     text-align: left;
     margin: 6px 0;
+    white-space: pre-wrap;
   }
 
   .input-row {
@@ -625,9 +626,9 @@
     </div>
 
     <div class="lang-group">
-      <button class="lang-btn active" onclick="setLang('ur')">اردو</button>
-      <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
-      <button class="lang-btn" onclick="setLang('en')">English</button>
+      <button class="lang-btn active" id="lang-ur" onclick="setLang('ur')">اردو</button>
+      <button class="lang-btn" id="lang-hi" onclick="setLang('hi')">हिंदी</button>
+      <button class="lang-btn" id="lang-en" onclick="setLang('en')">English</button>
     </div>
 
     <div class="zoom-controls">
@@ -686,19 +687,19 @@
               <span class="hit-count" id="bet-badge-LOW" style="display:none">0</span>
             </div>
             <div class="outside-box" data-bet="EVEN" onclick="placeOutside('EVEN', this)">
-              <span>EVEN</span>
+              <span id="lbl-even">EVEN</span>
               <span class="hit-count" id="bet-badge-EVEN" style="display:none">0</span>
             </div>
             <div class="outside-box red-box" data-bet="RED" onclick="placeOutside('RED', this)">
-              <span>RED</span>
+              <span id="lbl-red">RED</span>
               <span class="hit-count" id="bet-badge-RED" style="display:none">0</span>
             </div>
             <div class="outside-box black-box" data-bet="BLACK" onclick="placeOutside('BLACK', this)">
-              <span>BLACK</span>
+              <span id="lbl-black">BLACK</span>
               <span class="hit-count" id="bet-badge-BLACK" style="display:none">0</span>
             </div>
             <div class="outside-box" data-bet="ODD" onclick="placeOutside('ODD', this)">
-              <span>ODD</span>
+              <span id="lbl-odd">ODD</span>
               <span class="hit-count" id="bet-badge-ODD" style="display:none">0</span>
             </div>
             <div class="outside-box" data-bet="HIGH" onclick="placeOutside('HIGH', this)">
@@ -756,25 +757,25 @@
     <section id="panel-wallet" class="panel">
       <div class="card">
         <h3 class="card-title" id="w-title-identity">والٹ شناخت، کیو آر کوڈ اور ڈیجیٹل دستخط</h3>
-        <div class="stat-label">Public Wallet Address</div>
+        <div class="stat-label" id="w-lbl-addr">Public Wallet Address</div>
         <div class="mono-box" id="w-pub-addr"></div>
 
-        <div class="stat-label">Public Key (Verification)</div>
+        <div class="stat-label" id="w-lbl-pubkey">Public Key (Verification)</div>
         <div class="mono-box" id="w-pub-key"></div>
 
-        <div class="stat-label">Private Key (خفیہ — کسی کو نہ دکھائیں)</div>
+        <div class="stat-label" id="w-lbl-privkey">Private Key (خفیہ — کسی کو نہ دکھائیں)</div>
         <div class="mono-box" id="w-priv-key">••••••••••••••••••••••••••••••••</div>
         <div class="input-row">
-          <button class="btn" onclick="togglePrivKey()">👁️ Show / Hide Private Key</button>
-          <button class="btn" onclick="copyText(state.wallet.address)">📋 Copy Address</button>
-          <button class="btn" onclick="newWalletKeys()">🔄 New Keypair</button>
+          <button class="btn" id="btn-toggle-priv" onclick="togglePrivKey()">👁️ Show / Hide Private Key</button>
+          <button class="btn" id="btn-copy-addr" onclick="copyText(state.wallet.address)">📋 Copy Address</button>
+          <button class="btn" id="btn-new-keys" onclick="newWalletKeys()">🔄 New Keypair</button>
         </div>
 
         <div style="margin-top:12px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
           <canvas id="qr-canvas" width="132" height="132" style="background:#fff; padding:6px; border-radius:10px;"></canvas>
           <div>
-            <div style="font-weight:800; color:var(--gold); margin-bottom:4px;">Wallet QR Code</div>
-            <div style="font-size:12px; color:var(--text-muted); max-width:260px;">
+            <div style="font-weight:800; color:var(--gold); margin-bottom:4px;" id="w-qr-title">Wallet QR Code</div>
+            <div style="font-size:12px; color:var(--text-muted); max-width:260px;" id="w-qr-desc">
               یہ QR کوڈ آپ کے پبلک والٹ ایڈریس کی نمائندگی کرتا ہے تاکہ دوسرے صارفین آسانی سے AZM بھیج سکیں۔
             </div>
           </div>
@@ -782,77 +783,93 @@
       </div>
 
       <div class="card">
-        <h3 class="card-title">✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں (Signed Transfer)</h3>
+        <h3 class="card-title" id="w-send-title">✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں (Signed Transfer)</h3>
         <div class="input-row">
           <input type="text" id="send-to" placeholder="Receiver Public Address (e.g. AZM-PUB-...)" />
           <input type="number" step="0.00000001" id="send-amt" placeholder="Amount AZM" />
         </div>
-        <button class="btn btn-gold" onclick="sendSignedAzm()">Sign &amp; Send AZM</button>
+        <button class="btn btn-gold" id="btn-sign-send" onclick="sendSignedAzm()">Sign &amp; Send AZM</button>
         <div id="last-sig-box" class="mono-box" style="display:none"></div>
       </div>
 
       <div class="card">
-        <h3 class="card-title">🎁 ریوارڈز اور ویلکم بونس (5 کروڑ ریوارڈ بکٹ سے)</h3>
+        <h3 class="card-title" id="w-bt-title">📶 آف لائن / بلوٹوتھ ٹرانسفر پیکٹ (Offline Bluetooth Packet)</h3>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;" id="w-bt-desc">
+          انٹرنیٹ کے بغیر دوسرے موبائل کو بلوٹوتھ یا QR/ٹیکسٹ کے ذریعے بھیجنے کے لیے سائن شدہ پیکٹ تیار کریں۔
+        </div>
         <div class="input-row">
-          <button class="btn btn-gold" onclick="claimWelcome()">🎉 Welcome Bonus (+50 AZM)</button>
-          <button class="btn" onclick="claimAdReward()">📺 Watch Ad (+5 AZM)</button>
-          <button class="btn" onclick="claimDailyReward()">📅 Daily 24h (+1 AZM)</button>
-          <button class="btn" onclick="claimRefReward()">🤝 Refer (+10 AZM)</button>
+          <button class="btn" id="btn-gen-bt" onclick="generateOfflinePacket()">📶 Generate Offline Packet</button>
+          <button class="btn" id="btn-apply-bt" onclick="applyOfflinePacket()">📥 Receive / Apply Packet</button>
+        </div>
+        <input type="text" id="bt-packet-input" placeholder="Paste Offline AZM Packet here to apply..." />
+        <div id="bt-packet-out" class="mono-box" style="display:none"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" id="w-rew-title">🎁 ریوارڈز اور ویلکم بونس (5 کروڑ ریوارڈ بکٹ سے)</h3>
+        <div class="input-row">
+          <button class="btn btn-gold" id="btn-welcome" onclick="claimWelcome()">🎉 Welcome Bonus (+50 AZM)</button>
+          <button class="btn" id="btn-ad" onclick="claimAdReward()">📺 Watch Ad (+5 AZM)</button>
+          <button class="btn" id="btn-daily" onclick="claimDailyReward()">📅 Daily 24h (+1 AZM)</button>
+          <button class="btn" id="btn-ref" onclick="claimRefReward()">🤝 Refer (+10 AZM)</button>
         </div>
       </div>
     </section>
 
     <section id="panel-buckets" class="panel">
       <div class="card">
-        <h3 class="card-title">🪣 100 کروڑ AZM — تین الگ بکٹس (غیر متبدل کل سپلائی)</h3>
+        <h3 class="card-title" id="b-main-title">🪣 100 کروڑ AZM — تین الگ بکٹس (غیر متبدل کل سپلائی)</h3>
         <div class="mono-box" id="supply-check-box"></div>
         <div class="buckets-grid">
           <div class="bucket-card">
-            <div class="stat-label">1. ویلکم بونس ریزرو (Welcome Reserve)</div>
+            <div class="stat-label" id="b-lbl-welcome">1. ویلکم بونس ریزرو (Welcome Reserve)</div>
             <div class="stat-val" id="b-welcome">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">ابتدائی 1 کروڑ صارفین کے 50 AZM بونس کے لیے۔</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-welcome">ابتدائی 1 کروڑ صارفین کے 50 AZM بونس کے لیے۔</div>
           </div>
           <div class="bucket-card">
-            <div class="stat-label">2. رولیٹ ریزرو و آٹو ری فل (Roulette Reserve)</div>
+            <div class="stat-label" id="b-lbl-roulette">2. رولیٹ ریزرو و آٹو ری فل (Roulette Reserve)</div>
             <div class="stat-val" id="b-roulette">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">رولیٹ ہاؤس پول کم ہونے پر خودکار ٹاپ اپ کے لیے۔</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-roulette">رولیٹ ہاؤس پول کم ہونے پر خودکار ٹاپ اپ کے لیے۔</div>
           </div>
           <div class="bucket-card">
-            <div class="stat-label">3. ریوارڈ و فیس بکٹ (Reward &amp; Tx Bucket)</div>
+            <div class="stat-label" id="b-lbl-reward">3. ریوارڈ و فیس بکٹ (Reward &amp; Tx Bucket)</div>
             <div class="stat-val" id="b-reward">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Ad / Daily / Refer ریوارڈز اور Tx فیس کے لیے۔</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-reward">Ad / Daily / Refer ریوارڈز اور Tx فیس کے لیے۔</div>
           </div>
           <div class="bucket-card">
-            <div class="stat-label">فعال رولیٹ ہاؤس پول (Active House Pool)</div>
+            <div class="stat-label" id="b-lbl-house">فعال رولیٹ ہاؤس پول (Active House Pool)</div>
             <div class="stat-val" id="b-house">0</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">جیت کی ادائیگی اور ہارے داؤ کی واپسی کا پول۔</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;" id="b-desc-house">جیت کی ادائیگی اور ہارے داؤ کی واپسی کا پول۔</div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h3 class="card-title">⛓️ SHA-256 لیجر (حالیہ بلاکس)</h3>
+        <h3 class="card-title" id="b-ledger-title">⛓️ SHA-256 لیجر (حالیہ بلاکس)</h3>
         <div id="ledger-list"></div>
       </div>
     </section>
 
     <section id="panel-vault" class="panel">
       <div class="card">
-        <h3 class="card-title">👑 ماسٹر والٹ کنٹرول (AZM-MASTER-2026)</h3>
+        <h3 class="card-title" id="v-main-title">👑 ماسٹر والٹ کنٹرول (AZM-MASTER-2026)</h3>
         <div class="input-row">
           <input type="password" id="vault-pin" placeholder="Enter Master Code (AZM-MASTER-2026)" />
-          <button class="btn btn-gold" onclick="unlockVault()">Unlock Vault</button>
+          <button class="btn btn-gold" id="btn-unlock-vault" onclick="unlockVault()">Unlock Vault</button>
         </div>
         <div id="vault-controls" style="display:none; margin-top:12px;">
-          <div class="stat-label">میکس بیٹ لمٹ تبدیل کریں (Current: 5,000 AZM)</div>
+          <div class="stat-label" id="v-lbl-maxbet">میکس بیٹ لمٹ تبدیل کریں (Current: 5,000 AZM)</div>
           <div class="input-row">
             <input type="number" id="max-bet-input" value="5000" min="1" />
-            <button class="btn btn-gold" onclick="updateMaxBet()">Update Max Bet</button>
+            <button class="btn btn-gold" id="btn-upd-maxbet" onclick="updateMaxBet()">Update Max Bet</button>
           </div>
-          <div class="stat-label">رولیٹ آٹو ری فل کم از کم حد (Auto-Refill Threshold)</div>
+          <div class="stat-label" id="v-lbl-refill">رولیٹ آٹو ری فل کم از کم حد (Auto-Refill Threshold)</div>
           <div class="input-row">
             <input type="number" id="refill-thresh-input" value="1000000" min="100" />
-            <button class="btn" onclick="updateRefillThresh()">Update Threshold</button>
+            <button class="btn" id="btn-upd-refill" onclick="updateRefillThresh()">Update Threshold</button>
+          </div>
+          <div class="input-row">
+            <button class="btn btn-danger" id="btn-reset-demo" onclick="resetDemoState()">Reset Local Wallet State</button>
           </div>
         </div>
       </div>
@@ -865,10 +882,10 @@
 
 <div id="wheel-modal">
   <div class="modal-box">
-    <h3 style="margin:0 0 10px; color:var(--gold)">🎡 Spinning Wheel</h3>
+    <h3 style="margin:0 0 10px; color:var(--gold)" id="m-wheel-title">🎡 Spinning Wheel</h3>
     <div id="wheel-result-anim" style="font-size:38px; font-weight:900; padding:24px; border-radius:50%; width:120px; height:120px; margin:10px auto; display:flex; align-items:center; justify-content:center; border:4px solid var(--gold); background:#132a20;">?</div>
     <div id="wheel-outcome-text" style="font-size:14px; margin:12px 0; font-weight:700;"></div>
-    <button class="btn btn-gold" onclick="closeWheelModal()">OK</button>
+    <button class="btn btn-gold" id="btn-modal-ok" onclick="closeWheelModal()">OK</button>
   </div>
 </div>
 
@@ -876,6 +893,189 @@
 const TOTAL_SUPPLY_UNITS = 100000000000000000n;
 const DECIMALS = 100000000n;
 const RED_NUMS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+
+const I18N = {
+  ur: {
+    appTitle: "عزم (AZM) & یورپین رولیٹ",
+    tabRoulette: "🎡 رولیٹ ٹیبل",
+    tabWallet: "🪙 پبلک والٹ",
+    tabBuckets: "🪣 3 بکٹس (100 کروڑ)",
+    tabVault: "👑 ماسٹر والٹ",
+    lblBalance: "والٹ بیلنس (AZM)",
+    lblCurrentBet: "موجودہ داؤ (فی اسپن)",
+    lblMaxBet: "میکس بیٹ لمٹ",
+    lblLastWin: "آخری نتیجہ",
+    lblCoinTray: "تمام کوائنز (دائیں/بائیں اسکرول کریں)",
+    trashText: "🗑️ کوائن ہٹانے کے لیے یہاں کھینچ کر چھوڑیں (Drag Coin Here to Remove)",
+    btnClear: "صاف کریں",
+    btnUndo: "واپس",
+    btnDouble: "2x",
+    btnSpin: "اسپن (SPIN)",
+    wTitleIdentity: "والٹ شناخت، کیو آر کوڈ اور ڈیجیٹل دستخط",
+    wLblAddr: "پبلک والٹ ایڈریس (Public Address)",
+    wLblPubKey: "پبلک کی (Public Key)",
+    wLblPrivKey: "پرائیویٹ کی (خفیہ — کسی کو نہ دکھائیں)",
+    btnTogglePriv: "👁️ پرائیویٹ کی دکھائیں / چھپائیں",
+    btnCopyAddr: "📋 ایڈریس کاپی کریں",
+    btnNewKeys: "🔄 نئی کیز بنائیں",
+    wQrTitle: "والٹ کیو آر کوڈ (Wallet QR)",
+    wQrDesc: "یہ QR کوڈ آپ کے پبلک والٹ ایڈریس کی نمائندگی کرتا ہے تاکہ دوسرے صارفین آسانی سے AZM بھیج سکیں۔",
+    wSendTitle: "✍️ ڈیجیٹل دستخط کے ساتھ AZM بھیجیں",
+    sendToPh: "وصول کنندہ کا پبلک ایڈریس (e.g. AZM-PUB-...)",
+    sendAmtPh: "رقم (AZM)",
+    btnSignSend: "دستخط اور ارسال کریں",
+    wBtTitle: "📶 آف لائن / بلوٹوتھ ٹرانسفر پیکٹ",
+    wBtDesc: "بغیر انٹرنیٹ دوسرے فون کو بھیجنے یا موصول کرنے کے لیے سائن شدہ AZM پیکٹ استعمال کریں۔",
+    btnGenBt: "📶 آف لائن پیکٹ بنائیں",
+    btnApplyBt: "📥 پیکٹ لاگو کریں",
+    btPh: "آف لائن AZM پیکٹ یہاں پیسٹ کریں...",
+    wRewTitle: "🎁 ریوارڈز اور ویلکم بونس",
+    btnWelcome: "🎉 ویلکم بونس (+50 AZM)",
+    btnAd: "📺 اشتہار دیکھیں (+5 AZM)",
+    btnDaily: "📅 ڈیلی 24گھنٹے (+1 AZM)",
+    btnRef: "🤝 ریفر بونس (+10 AZM)",
+    bMainTitle: "🪣 100 کروڑ AZM — بکٹس اور غیر متبدل سپلائی",
+    bLblWelcome: "1. ویلکم بونس ریزرو",
+    bDescWelcome: "ابتدائی صارفین کے 50 AZM ویلکم بونس کے لیے۔",
+    bLblRoulette: "2. رولیٹ ریزرو و آٹو ری فل",
+    bDescRoulette: "رولیٹ ہاؤس پول کم ہونے پر خودکار ٹاپ اپ کے لیے۔",
+    bLblReward: "3. ریوارڈ و فیس بکٹ",
+    bDescReward: "Ad / Daily / Refer ریوارڈز اور ٹرانزیکشنز کے لیے۔",
+    bLblHouse: "فعال رولیٹ ہاؤس پول",
+    bDescHouse: "جیت کی ادائیگی اور ہارے داؤ کی واپسی کا پول۔",
+    bLedgerTitle: "⛓️ SHA-256 لیجر (حالیہ بلاکس)",
+    vMainTitle: "👑 ماسٹر والٹ کنٹرول (AZM-MASTER-2026)",
+    vaultPinPh: "ماسٹر کوڈ درج کریں (AZM-MASTER-2026)",
+    btnUnlockVault: "والٹ کھولیں",
+    vLblMaxBet: "میکس بیٹ لمٹ تبدیل کریں (AZM)",
+    btnUpdMaxBet: "بیٹ لمٹ اپ ڈیٹ کریں",
+    vLblRefill: "رولیٹ آٹو ری فل حد (AZM)",
+    btnUpdRefill: "حد اپ ڈیٹ کریں",
+    btnResetDemo: "مقامی والٹ ری سیٹ کریں",
+    wheelTitle: "🎡 وہیل گھوم رہا ہے",
+    modalOk: "ٹھیک ہے"
+  },
+  hi: {
+    appTitle: "अज़म (AZM) और यूरोपियन रूलेट",
+    tabRoulette: "🎡 रूलेट टेबल",
+    tabWallet: "🪙 पब्लिक वॉलेट",
+    tabBuckets: "🪣 3 बकेट्स (100 करोड़)",
+    tabVault: "👑 मास्टर वॉलेट",
+    lblBalance: "वॉलेट बैलेंस (AZM)",
+    lblCurrentBet: "मौजूदा दांव (प्रति स्पिन)",
+    lblMaxBet: "मैक्स बेट लिमिट",
+    lblLastWin: "आखिरी नतीजा",
+    lblCoinTray: "सभी कॉइन्स (दाएं/बाएं स्क्रॉल करें)",
+    trashText: "🗑️ कॉइन हटाने के लिए यहां खींचकर छोड़ें (Drag Coin Here to Remove)",
+    btnClear: "साफ़ करें",
+    btnUndo: "वापस",
+    btnDouble: "2x",
+    btnSpin: "स्पिन (SPIN)",
+    wTitleIdentity: "वॉलेट पहचान, QR कोड और डिजिटल हस्ताक्षर",
+    wLblAddr: "पब्लिक वॉलेट एड्रेस (Public Address)",
+    wLblPubKey: "पब्लिक की (Public Key)",
+    wLblPrivKey: "प्राइवेट की (गुप्त — किसी को न दिखाएं)",
+    btnTogglePriv: "👁️ प्राइवेट की दिखाएं / छुपाएं",
+    btnCopyAddr: "📋 एड्रेस कॉपी करें",
+    btnNewKeys: "🔄 नई कीज़ बनाएं",
+    wQrTitle: "वॉलेट QR कोड",
+    wQrDesc: "यह QR कोड आपके पब्लिक वॉलेट एड्रेस को दिखाता है ताकि दूसरे यूज़र आसानी से AZM भेज सकें।",
+    wSendTitle: "✍️ डिजिटल सिग्नेचर के साथ AZM भेजें",
+    sendToPh: "रिसीवर का पब्लिक एड्रेस (e.g. AZM-PUB-...)",
+    sendAmtPh: "रकम (AZM)",
+    btnSignSend: "साइन और भेजें",
+    wBtTitle: "📶 ऑफ़लाइन / ब्लूटूथ ट्रांसफ़र पैकेट",
+    wBtDesc: "बिना इंटरनेट दूसरे फ़ोन को भेजने या लेने के लिए साइन किया हुआ AZM पैकेट इस्तेमाल करें।",
+    btnGenBt: "📶 ऑफ़लाइन पैकेट बनाएं",
+    btnApplyBt: "📥 पैकेट लागू करें",
+    btPh: "ऑफ़लाइन AZM पैकेट यहां पेस्ट करें...",
+    wRewTitle: "🎁 रिवॉर्ड्स और वेलकम बोनस",
+    btnWelcome: "🎉 वेलकम बोनस (+50 AZM)",
+    btnAd: "📺 विज्ञापन देखें (+5 AZM)",
+    btnDaily: "📅 डेली 24 घंटे (+1 AZM)",
+    btnRef: "🤝 रेफ़र बोनस (+10 AZM)",
+    bMainTitle: "🪣 100 करोड़ AZM — बकेट्स और निश्चित सप्लाई",
+    bLblWelcome: "1. वेलकम बोनस रिज़र्व",
+    bDescWelcome: "शुरुआती यूज़र्स के 50 AZM वेलकम बोनस के लिए।",
+    bLblRoulette: "2. रूलेट रिज़र्व व ऑटो रिफ़िल",
+    bDescRoulette: "रूलेट हाउस पूल कम होने पर अपने आप टॉप-अप के लिए।",
+    bLblReward: "3. रिवॉर्ड व फ़ीस बकेट",
+    bDescReward: "Ad / Daily / Refer रिवॉर्ड्स और ट्रांज़ैक्शन्स के लिए।",
+    bLblHouse: "सक्रिय रूलेट हाउस पूल",
+    bDescHouse: "जीत के भुगतान और दांव के सेटलमेंट का पूल।",
+    bLedgerTitle: "⛓️ SHA-256 लेजर (हालिया ब्लॉक्स)",
+    vMainTitle: "👑 मास्टर वॉलेट कंट्रोल (AZM-MASTER-2026)",
+    vaultPinPh: "मास्टर कोड दर्ज करें (AZM-MASTER-2026)",
+    btnUnlockVault: "वॉलेट खोलें",
+    vLblMaxBet: "मैक्स बेट लिमिट बदलें (AZM)",
+    btnUpdMaxBet: "बेट लिमिट अपडेट करें",
+    vLblRefill: "रूलेट ऑटो रिफ़िल सीमा (AZM)",
+    btnUpdRefill: "सीमा अपडेट करें",
+    btnResetDemo: "लोकल वॉलेट रीसेट करें",
+    wheelTitle: "🎡 व्हील घूम रहा है",
+    modalOk: "ठीक है"
+  },
+  en: {
+    appTitle: "AZM & European Roulette",
+    tabRoulette: "🎡 Roulette Table",
+    tabWallet: "🪙 Public Wallet",
+    tabBuckets: "🪣 3 Buckets (1B AZM)",
+    tabVault: "👑 Master Vault",
+    lblBalance: "Wallet Balance (AZM)",
+    lblCurrentBet: "Current Bet (Per Spin)",
+    lblMaxBet: "Max Bet Limit",
+    lblLastWin: "Last Result",
+    lblCoinTray: "All Coins (Scroll Left / Right)",
+    trashText: "🗑️ Drag Coin Here to Remove / Refund",
+    btnClear: "Clear",
+    btnUndo: "Undo",
+    btnDouble: "2x",
+    btnSpin: "SPIN",
+    wTitleIdentity: "Wallet Identity, QR Code & Digital Signature",
+    wLblAddr: "Public Wallet Address",
+    wLblPubKey: "Public Key (Verification)",
+    wLblPrivKey: "Private Key (Secret — Never Share)",
+    btnTogglePriv: "👁️ Show / Hide Private Key",
+    btnCopyAddr: "📋 Copy Address",
+    btnNewKeys: "🔄 New Keypair",
+    wQrTitle: "Wallet QR Code",
+    wQrDesc: "This QR code represents your public wallet address so others can send AZM easily.",
+    wSendTitle: "✍️ Send AZM with Digital Signature",
+    sendToPh: "Receiver Public Address (e.g. AZM-PUB-...)",
+    sendAmtPh: "Amount (AZM)",
+    btnSignSend: "Sign & Send AZM",
+    wBtTitle: "📶 Offline / Bluetooth Transfer Packet",
+    wBtDesc: "Generate or apply a signed AZM packet for offline or Bluetooth peer transfer.",
+    btnGenBt: "📶 Generate Offline Packet",
+    btnApplyBt: "📥 Apply Packet",
+    btPh: "Paste Offline AZM Packet here...",
+    wRewTitle: "🎁 Rewards & Welcome Bonus",
+    btnWelcome: "🎉 Welcome Bonus (+50 AZM)",
+    btnAd: "📺 Watch Ad (+5 AZM)",
+    btnDaily: "📅 Daily 24h (+1 AZM)",
+    btnRef: "🤝 Refer Bonus (+10 AZM)",
+    bMainTitle: "🪣 1B AZM — Buckets & Fixed Supply",
+    bLblWelcome: "1. Welcome Bonus Reserve",
+    bDescWelcome: "Reserved for initial 50 AZM welcome bonuses.",
+    bLblRoulette: "2. Roulette Reserve & Auto-Refill",
+    bDescRoulette: "Automatic top-up when roulette house pool runs low.",
+    bLblReward: "3. Reward & Tx Bucket",
+    bDescReward: "For Ad / Daily / Refer rewards and transactions.",
+    bLblHouse: "Active Roulette House Pool",
+    bDescHouse: "Pool for spin payouts and round settlements.",
+    bLedgerTitle: "⛓️ SHA-256 Ledger (Recent Blocks)",
+    vMainTitle: "👑 Master Vault Control (AZM-MASTER-2026)",
+    vaultPinPh: "Enter Master Code (AZM-MASTER-2026)",
+    btnUnlockVault: "Unlock Vault",
+    vLblMaxBet: "Update Max Bet Limit (AZM)",
+    btnUpdMaxBet: "Update Max Bet",
+    vLblRefill: "Roulette Auto-Refill Threshold (AZM)",
+    btnUpdRefill: "Update Threshold",
+    btnResetDemo: "Reset Local Wallet State",
+    wheelTitle: "🎡 Spinning Wheel",
+    modalOk: "OK"
+  }
+};
 
 const COIN_DENOMS = [
   { label: "1u", units: 1n },
@@ -949,6 +1149,7 @@ function defaultState() {
     refCount: 0,
     selectedChipUnits: "100000000",
     showPrivKey: false,
+    lastResultText: "—",
     wallet: {
       address: kp.addr,
       publicKey: kp.pubKey,
@@ -1039,17 +1240,89 @@ function showToast(msg) {
   }, 2800);
 }
 
-function setLang(lang) {
-  state.lang = lang;
+function applyLanguageTexts() {
+  const lang = I18N[state.lang] ? state.lang : "ur";
+  const d = I18N[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
-  document.querySelectorAll(".lang-btn").forEach(btn => {
-    const label = btn.textContent.trim();
-    const match = (lang === "ur" && label === "اردو") ||
-                  (lang === "hi" && label === "हिंदी") ||
-                  (lang === "en" && label === "English");
-    btn.classList.toggle("active", match);
+
+  ["ur", "hi", "en"].forEach(code => {
+    const b = document.getElementById("lang-" + code);
+    if (b) b.classList.toggle("active", code === lang);
   });
+
+  const setTxt = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) el.textContent = val;
+  };
+  const setPh = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) el.placeholder = val;
+  };
+
+  setTxt("t-app-title", d.appTitle);
+  setTxt("tab-roulette", d.tabRoulette);
+  setTxt("tab-wallet", d.tabWallet);
+  setTxt("tab-buckets", d.tabBuckets);
+  setTxt("tab-vault", d.tabVault);
+  setTxt("lbl-balance", d.lblBalance);
+  setTxt("lbl-current-bet", d.lblCurrentBet);
+  setTxt("lbl-max-bet", d.lblMaxBet);
+  setTxt("lbl-last-win", d.lblLastWin);
+  setTxt("lbl-coin-tray", d.lblCoinTray);
+  setTxt("trash-dropzone", d.trashText);
+  setTxt("btn-clear", d.btnClear);
+  setTxt("btn-undo", d.btnUndo);
+  setTxt("btn-double", d.btnDouble);
+  setTxt("btn-spin", d.btnSpin);
+  setTxt("w-title-identity", d.wTitleIdentity);
+  setTxt("w-lbl-addr", d.wLblAddr);
+  setTxt("w-lbl-pubkey", d.wLblPubKey);
+  setTxt("w-lbl-privkey", d.wLblPrivKey);
+  setTxt("btn-toggle-priv", d.btnTogglePriv);
+  setTxt("btn-copy-addr", d.btnCopyAddr);
+  setTxt("btn-new-keys", d.btnNewKeys);
+  setTxt("w-qr-title", d.wQrTitle);
+  setTxt("w-qr-desc", d.wQrDesc);
+  setTxt("w-send-title", d.wSendTitle);
+  setPh("send-to", d.sendToPh);
+  setPh("send-amt", d.sendAmtPh);
+  setTxt("btn-sign-send", d.btnSignSend);
+  setTxt("w-bt-title", d.wBtTitle);
+  setTxt("w-bt-desc", d.wBtDesc);
+  setTxt("btn-gen-bt", d.btnGenBt);
+  setTxt("btn-apply-bt", d.btnApplyBt);
+  setPh("bt-packet-input", d.btPh);
+  setTxt("w-rew-title", d.wRewTitle);
+  setTxt("btn-welcome", d.btnWelcome);
+  setTxt("btn-ad", d.btnAd);
+  setTxt("btn-daily", d.btnDaily);
+  setTxt("btn-ref", d.btnRef);
+  setTxt("b-main-title", d.bMainTitle);
+  setTxt("b-lbl-welcome", d.bLblWelcome);
+  setTxt("b-desc-welcome", d.bDescWelcome);
+  setTxt("b-lbl-roulette", d.bLblRoulette);
+  setTxt("b-desc-roulette", d.bDescRoulette);
+  setTxt("b-lbl-reward", d.bLblReward);
+  setTxt("b-desc-reward", d.bDescReward);
+  setTxt("b-lbl-house", d.bLblHouse);
+  setTxt("b-desc-house", d.bDescHouse);
+  setTxt("b-ledger-title", d.bLedgerTitle);
+  setTxt("v-main-title", d.vMainTitle);
+  setPh("vault-pin", d.vaultPinPh);
+  setTxt("btn-unlock-vault", d.btnUnlockVault);
+  setTxt("v-lbl-maxbet", d.vLblMaxBet);
+  setTxt("btn-upd-maxbet", d.btnUpdMaxBet);
+  setTxt("v-lbl-refill", d.vLblRefill);
+  setTxt("btn-upd-refill", d.btnUpdRefill);
+  setTxt("btn-reset-demo", d.btnResetDemo);
+  setTxt("m-wheel-title", d.wheelTitle);
+  setTxt("btn-modal-ok", d.modalOk);
+}
+
+function setLang(lang) {
+  state.lang = lang;
+  applyLanguageTexts();
   saveState();
   renderAll();
 }
@@ -1114,7 +1387,7 @@ function renderCoinTray() {
     el.textContent = c.label;
     el.onclick = () => {
       if (bal <= 0n) {
-        showToast("بیلنس 0 ہے — ریوارڈ سے AZM حاصل کریں");
+        showToast("0 AZM");
         return;
       }
       state.selectedChipUnits = c.units.toString();
@@ -1202,14 +1475,14 @@ function placeBetOnKey(betKey, targetEl) {
   const maxBet = BigInt(state.maxBetUnits || "500000000000");
 
   if (bal <= 0n) {
-    showToast("آپ کے والٹ میں AZM بیلنس 0 ہے!");
+    showToast("0 AZM");
     return;
   }
   if (chip <= 0n) return;
 
   const actualAdd = chip <= bal ? chip : bal;
   if (currentBet + actualAdd > maxBet) {
-    showToast(`زیادہ سے زیادہ داؤ کی حد ${fmtAzm(maxBet)} ہے!`);
+    showToast(`Max Bet: ${fmtAzm(maxBet)}`);
     return;
   }
 
@@ -1253,11 +1526,11 @@ function doubleBets() {
 
   if (currentBet <= 0n) return;
   if (currentBet * 2n > maxBet) {
-    showToast(`2x کرنے سے داؤ ${fmtAzm(maxBet)} سے بڑھ جائے گا!`);
+    showToast(`Max Bet: ${fmtAzm(maxBet)}`);
     return;
   }
   if (bal < currentBet) {
-    showToast("2x کرنے کے لیے والٹ بیلنس ناکافی ہے!");
+    showToast("Insufficient AZM");
     return;
   }
 
@@ -1310,7 +1583,7 @@ function calcPayoutForNumber(betKey, winNum, stakeUnits) {
 async function spinRoulette() {
   const totalBet = getTotalCurrentBetUnits();
   if (totalBet <= 0n) {
-    showToast("پہلے ٹیبل پر AZM داؤ لگائیں!");
+    showToast("Place a bet first");
     return;
   }
 
@@ -1376,9 +1649,8 @@ async function finalizeSpin(winNum, totalBet, animEl, outEl) {
   }
 
   const net = totalReturn - totalBet;
+  state.lastResultText = `#${winNum} (${fmtAzm(net)})`;
   outEl.textContent = `Number ${winNum} | Return: ${fmtAzm(totalReturn)} (Net: ${fmtAzm(net)})`;
-  const lastResEl = document.getElementById("ui-last-result");
-  if (lastResEl) lastResEl.textContent = `#${winNum} (${fmtAzm(net)})`;
 
   await appendBlock("ROULETTE_SPIN", `Spin #${state.spinCount} Hit ${winNum}, Bet ${fmtAzm(totalBet)}, Return ${fmtAzm(totalReturn)}`);
   saveState();
@@ -1462,7 +1734,7 @@ function attachPlacedChipDrag(chipEl, betKey, unitsBig) {
 
     if (overTrash) {
       state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + moveUnits).toString();
-      showToast("کوائن والٹ میں واپس کر دیا گیا");
+      showToast("Refunded to Wallet");
     } else {
       const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
       const dropTarget = elemBelow ? elemBelow.closest("[data-bet]") : null;
@@ -1502,13 +1774,13 @@ function renderPlacedChips() {
 
 async function claimWelcome() {
   if (state.welcomeClaimed) {
-    showToast("ویلکم بونس پہلے ہی حاصل کیا جا چکا ہے!");
+    showToast("Welcome bonus already claimed");
     return;
   }
   const bonus = 5000000000n;
   const wRes = BigInt(state.buckets.welcomeUnits || "0");
   if (wRes < bonus) {
-    showToast("ویلکم ریزرو ختم ہو گیا ہے!");
+    showToast("Welcome reserve empty");
     return;
   }
   state.buckets.welcomeUnits = (wRes - bonus).toString();
@@ -1517,30 +1789,27 @@ async function claimWelcome() {
   await appendBlock("WELCOME_BONUS", `Credited ${fmtAzm(bonus)} to ${state.wallet.address}`);
   saveState();
   renderAll();
-  showToast("50.00000000 AZM ویلکم بونس مل گیا!");
+  showToast("+50.00000000 AZM");
 }
 
 async function claimAdReward() {
   const amt = 500000000n;
   const rew = BigInt(state.buckets.rewardUnits || "0");
-  if (rew < amt) {
-    showToast("ریوارڈ بکٹ میں بیلنس کم ہے!");
-    return;
-  }
+  if (rew < amt) return;
   state.buckets.rewardUnits = (rew - amt).toString();
   state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + amt).toString();
   state.adCount += 1;
   await appendBlock("AD_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
   saveState();
   renderAll();
-  showToast("Watch Ad: +5.00000000 AZM شامل ہو گئے!");
+  showToast("+5.00000000 AZM");
 }
 
 async function claimDailyReward() {
   const now = Date.now();
   const dayMs = 24 * 60 * 60 * 1000;
   if (now - Number(state.lastDailyClaim || 0) < dayMs) {
-    showToast("24 گھنٹے بعد دوبارہ ڈیلی بونس ملے گا!");
+    showToast("24h cooldown active");
     return;
   }
   const amt = 100000000n;
@@ -1552,7 +1821,7 @@ async function claimDailyReward() {
   await appendBlock("DAILY_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
   saveState();
   renderAll();
-  showToast("Daily Bonus: +1.00000000 AZM شامل ہو گیا!");
+  showToast("+1.00000000 AZM");
 }
 
 async function claimRefReward() {
@@ -1565,20 +1834,20 @@ async function claimRefReward() {
   await appendBlock("REF_REWARD", `Credited ${fmtAzm(amt)} from Reward Bucket`);
   saveState();
   renderAll();
-  showToast("Refer Bonus: +10.00000000 AZM شامل ہو گئے!");
+  showToast("+10.00000000 AZM");
 }
 
 async function sendSignedAzm() {
   const toAddr = document.getElementById("send-to").value.trim();
   const amtNum = parseFloat(document.getElementById("send-amt").value);
   if (!toAddr || isNaN(amtNum) || amtNum <= 0) {
-    showToast("درست ایڈریس اور رقم درج کریں!");
+    showToast("Enter valid address & amount");
     return;
   }
   const units = BigInt(Math.round(amtNum * 1e8));
   const bal = BigInt(state.wallet.balanceUnits || "0");
   if (units > bal) {
-    showToast("والٹ بیلنس ناکافی ہے!");
+    showToast("Insufficient balance");
     return;
   }
 
@@ -1595,7 +1864,58 @@ async function sendSignedAzm() {
   await appendBlock("SIGNED_TRANSFER", `From ${state.wallet.address} to ${toAddr}: ${fmtAzm(units)} | Sig: 0x${sig.slice(0, 16)}...`);
   saveState();
   renderAll();
-  showToast("ڈیجیٹل دستخط کے ساتھ ٹرانزیکشن مکمل!");
+  showToast("Signed AZM Sent");
+}
+
+async function generateOfflinePacket() {
+  const toAddr = document.getElementById("send-to").value.trim() || "BT-PEER-DEVICE";
+  const amtNum = parseFloat(document.getElementById("send-amt").value);
+  if (isNaN(amtNum) || amtNum <= 0) {
+    showToast("Enter amount first");
+    return;
+  }
+  const units = BigInt(Math.round(amtNum * 1e8));
+  const bal = BigInt(state.wallet.balanceUnits || "0");
+  if (units > bal) {
+    showToast("Insufficient balance");
+    return;
+  }
+  state.wallet.balanceUnits = (bal - units).toString();
+  const nonce = randomHex(8);
+  const rawObj = { proto: "AZM-BT-OFFLINE-V1", from: state.wallet.address, to: toAddr, units: units.toString(), nonce };
+  const sig = await sha256Hex(JSON.stringify(rawObj) + "|" + state.wallet.privateKey);
+  const packet = btoa(JSON.stringify({ ...rawObj, sig }));
+
+  const out = document.getElementById("bt-packet-out");
+  if (out) {
+    out.style.display = "block";
+    out.textContent = packet;
+  }
+  copyText(packet);
+  await appendBlock("OFFLINE_BT_EXPORT", `Exported ${fmtAzm(units)} packet for ${toAddr}`);
+  saveState();
+  renderAll();
+}
+
+async function applyOfflinePacket() {
+  const rawInput = document.getElementById("bt-packet-input").value.trim();
+  if (!rawInput) return;
+  try {
+    const decoded = JSON.parse(atob(rawInput));
+    if (decoded.proto !== "AZM-BT-OFFLINE-V1" || !decoded.units) {
+      showToast("Invalid packet");
+      return;
+    }
+    const units = BigInt(decoded.units);
+    if (units <= 0n) return;
+    state.wallet.balanceUnits = (BigInt(state.wallet.balanceUnits || "0") + units).toString();
+    await appendBlock("OFFLINE_BT_IMPORT", `Received ${fmtAzm(units)} from ${decoded.from || "BT-PEER"}`);
+    saveState();
+    renderAll();
+    showToast(`Received ${fmtAzm(units)}`);
+  } catch {
+    showToast("Invalid packet format");
+  }
 }
 
 function togglePrivKey() {
@@ -1614,14 +1934,14 @@ function newWalletKeys() {
   };
   saveState();
   renderWalletTab();
-  showToast("نئی پرائیویٹ اور پبلک کی تیار ہو گئی!");
+  showToast("New keypair generated");
 }
 
 function copyText(txt) {
   try {
     navigator.clipboard?.writeText(txt);
   } catch {}
-  showToast("کاپی ہو گیا!");
+  showToast("Copied");
 }
 
 function drawSimpleQr(canvas, text) {
@@ -1671,9 +1991,9 @@ function unlockVault() {
   const pin = document.getElementById("vault-pin").value.trim();
   if (pin === "AZM-MASTER-2026") {
     document.getElementById("vault-controls").style.display = "block";
-    showToast("ماسٹر والٹ کھل گیا!");
+    showToast("Master Vault Unlocked");
   } else {
-    showToast("غلط ماسٹر کوڈ!");
+    showToast("Invalid Master Code");
   }
 }
 
@@ -1683,7 +2003,7 @@ function updateMaxBet() {
   state.maxBetUnits = BigInt(Math.round(val * 1e8)).toString();
   saveState();
   renderAll();
-  showToast(`نئی میکس بیٹ لمٹ: ${fmtAzm(BigInt(state.maxBetUnits))}`);
+  showToast(`Max Bet: ${fmtAzm(BigInt(state.maxBetUnits))}`);
 }
 
 function updateRefillThresh() {
@@ -1692,7 +2012,16 @@ function updateRefillThresh() {
   state.refillThresholdUnits = BigInt(Math.round(val * 1e8)).toString();
   saveState();
   renderAll();
-  showToast("آٹو ری فل حد اپ ڈیٹ ہو گئی!");
+  showToast("Threshold updated");
+}
+
+function resetDemoState() {
+  localStorage.removeItem("azm_roulette_state_v1");
+  state = defaultState();
+  saveState();
+  applyLanguageTexts();
+  renderAll();
+  showToast("Reset complete");
 }
 
 function renderWalletTab() {
@@ -1737,6 +2066,7 @@ function renderBucketsTab() {
 
 function renderAll() {
   try {
+    applyLanguageTexts();
     const bal = BigInt(state.wallet.balanceUnits || "0");
     const bet = getTotalCurrentBetUnits();
     const maxBet = BigInt(state.maxBetUnits || "500000000000");
@@ -1744,12 +2074,14 @@ function renderAll() {
     const uiBal = document.getElementById("ui-balance");
     const uiBet = document.getElementById("ui-current-bet");
     const uiMax = document.getElementById("ui-max-bet");
+    const uiLast = document.getElementById("ui-last-result");
     const uiSpin = document.getElementById("ui-spin-info");
     const uiHC = document.getElementById("ui-hot-cold");
 
     if (uiBal) uiBal.textContent = fmtAzm(bal);
     if (uiBet) uiBet.textContent = fmtAzm(bet);
     if (uiMax) uiMax.textContent = fmtAzm(maxBet);
+    if (uiLast) uiLast.textContent = state.lastResultText || "—";
     if (uiSpin) uiSpin.textContent = `Spins: ${state.spinCount || 0} | R1: ${(state.roundUniqueSet || []).length}/37`;
 
     const pairs = (state.freq || Array(37).fill(0)).map((cnt, num) => ({ num, cnt: Number(cnt || 0) }));
