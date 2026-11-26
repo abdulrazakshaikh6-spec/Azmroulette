@@ -5566,4 +5566,52 @@
 </script>
 </body>
 </html>
-```
+```<script>
+(function () {
+  const S = {
+    ur: {
+      wrongMasterKey: "❌ غلط ماسٹر کی!",
+      masterKeyPlaceholder: "",
+      chainVerifiedBadge: "🛡️ لوکل لیجر ٹھیک",
+      chainTamperBadge: "⚠️ لیجر الرٹ",
+      adSponsorTag: "📺 ڈیمو اشتہار (ٹیسٹ)",
+      psNoticeBody: "AZM صرف تفریح کے لیے ورچوئل پوائنٹس ہیں۔ ان کی کوئی حقیقی قیمت نہیں؛ انہیں پیسوں، کرپٹو یا انعام میں بدلا یا نکالا نہیں جا سکتا۔ صرف 18+ کے لیے۔"
+    },
+    hi: {
+      wrongMasterKey: "❌ गलत मास्टर की!",
+      masterKeyPlaceholder: "",
+      chainVerifiedBadge: "🛡️ लोकल लेज़र ठीक",
+      chainTamperBadge: "⚠️ लेज़र अलर्ट",
+      adSponsorTag: "📺 डेमो विज्ञापन (टेस्ट)",
+      psNoticeBody: "AZM सिर्फ़ मनोरंजन के लिए वर्चुअल पॉइंट हैं। इनकी कोई असली कीमत नहीं है; इन्हें पैसे, क्रिप्टो या इनाम में बदला या निकाला नहीं जा सकता। केवल 18+ के लिए।"
+    },
+    en: {
+      wrongMasterKey: "❌ Invalid Master Key!",
+      masterKeyPlaceholder: "",
+      chainVerifiedBadge: "🛡️ Local Ledger OK",
+      chainTamperBadge: "⚠️ Ledger Alert",
+      adSponsorTag: "📺 DEMO AD (TEST)",
+      psNoticeBody: "AZM are virtual points for entertainment only. They have no real-world value and cannot be exchanged, cashed out, or redeemed. 18+ only."
+    }
+  };
+  for (const k in S) Object.assign(I18N[k], S[k]);
+
+  // ओनर वॉल्ट छिपाएँ (सिर्फ़ #owner वाले लिंक पर दिखेगा)
+  if (location.hash !== "#owner") {
+    document.getElementById("openMasterVaultBtn").style.display = "none";
+  }
+
+  // नकली P2P ट्रांसफ़र बंद करें
+  const p2pBtn = document.getElementById("executeSignedP2pBtn");
+  p2pBtn.style.opacity = "0.5";
+  p2pBtn.onclick = function () {
+    const m = document.getElementById("p2pStatusMsg");
+    m.style.color = "#f1c40f";
+    m.textContent = {
+      ur: "ℹ️ ٹرانسفر ابھی بند ہے (سرور درکار)۔",
+      hi: "ℹ️ ट्रांसफ़र अभी बंद है (सर्वर चाहिए)।",
+      en: "ℹ️ Transfers are off until a server is added."
+    }[lang];
+  };
+})();
+</script>
